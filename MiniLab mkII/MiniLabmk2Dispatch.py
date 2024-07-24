@@ -60,5 +60,5 @@ class MidiEventDispatcher:
 
 
 def send_to_device(data) :
-    #The only function that will sens SysEx data to the controller
+    #The only function that will send SysEx data to the controller
     device.midiOutSysex(bytes([0xF0, 0x00, 0x20, 0x6B, 0x7F, 0x42]) + data + bytes([0xF7]))
