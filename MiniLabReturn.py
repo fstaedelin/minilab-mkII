@@ -3,7 +3,7 @@ import ui
 import time
 import transport
 import mixer
-from MiniLabmk2Dispatch import send_to_device 
+from MiniLabDispatch import send_to_device 
 
 
 # This class handles visual feedback functions.

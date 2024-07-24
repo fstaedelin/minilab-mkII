@@ -1,5 +1,5 @@
 import device
-from MiniLabmk2Dispatch import send_to_device 
+from MiniLabDispatch import send_to_device 
 # MIT License
 # Copyright (c) 2020 Ray Juang
 

@@ -1,12 +1,11 @@
-# name= MiniLab mkII
-# supportedHardwareIds=00 20 6B 02 00 04 02
+# name= Arturia MiniLab mkII
 
 """
 [[
 	Surface:	MiniLab mkII
-	Developer:	Farès MEZDOUR
-	Version:	Beta 1.0
-	Date:		6/11/2021
+	Developer:	Fef
+	Version:	Alpha 1.0
+	Date:		09/08/2023
 
 ]]
 """
@@ -22,12 +21,13 @@ import channels
 import playlist
 import patterns
 import device
+import mapping
 
 
 
-from MiniLabmk2Leds import MiniLabmk2Led
-from MiniLabmk2Process import MiniLabMidiProcessor
-from MiniLabmk2Return import MiniLabLightReturn
+from MiniLabLeds import MiniLabmk2Led
+from MiniLabProcess import MiniLabMidiProcessor
+from MiniLabReturn import MiniLabLightReturn
 import ArturiaVCOL
 
 ## CONSTANT
@@ -94,10 +94,6 @@ class MidiControllerConfig :
         }
         self._lights.SetLights(led_map)
         
-        
-        
-
-
 
 _mk2 = MidiControllerConfig()
 _processor = MiniLabMidiProcessor(_mk2)
@@ -115,12 +111,15 @@ def OnMidiMsg(event) :
 # Function called when FL Studio is starting
 
 def OnInit():
-    print('Loaded MIDI script for Arturia MiniLab mkII')
-    for i in COLOUR :
-        _mk2.Sync(i)
-        time.sleep(TEMP)
-    
+	print("Keyboard mode mapping :")
+	mapping.KeyboardKnobs.printKnobMap()
+	mapping.KeyboardPads.printPadMap()
 
+	print('Loaded MIDI script for Arturia MiniLab mkII')
+	for i in COLOUR :
+		_mk2.Sync(i)
+		time.sleep(TEMP)
+    
 # Handles the script when FL Studio closes
 
 def OnDeInit():
@@ -148,7 +147,7 @@ def OnRefresh(flags) :
 
 
 def OnPitchBend(event) :
-    if channels.getChannelName(channels.channelNumber()) not in ArturiaVCOL.V_COL :
+    if channels.getChannelName(channels.channelNumber()) not in ['Hi Keys', 'Mid Keys'] :
         channels.setChannelPitch(channels.channelNumber(),(event.data2-64)*(200/64),1)
         event.handled = True
     else :
@@ -163,4 +162,3 @@ def OnSysEx(event) :
             AL_MEMORY = 1
         else :
             AL_MEMORY = 0
-        
