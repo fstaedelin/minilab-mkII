@@ -18,7 +18,7 @@ class MidiEventDispatcher:
 
 
     def NewHandler(self, key, callback_fn, filter_fn =None):
-        #This function will create a new like between a key and a function
+        #This function will create a new link between a key and a function
 
         # param key: the result value of transform_fn(event) to match against.
         # param callback_fn: function that is called with the event in the event the transformed event matches.

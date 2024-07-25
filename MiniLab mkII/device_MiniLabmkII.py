@@ -1,4 +1,4 @@
-# name= MiniLab mkII
+# name= MiniLab mkII factory
 # supportedHardwareIds=00 20 6B 02 00 04 02
 
 """
