@@ -1,5 +1,5 @@
 # import your template presets:
-import FelixTemplate as template
+import utility.FelixTemplate as template
 
 # import proper FL STUDIO functions
 import transport
@@ -56,6 +56,8 @@ def sysex_dummy(event):
     print('\t |-> Check in MiniLabProcessor.sysex_dispatcher name of key')
     print('\t |-> Code in utility/flcommands')
 
+def normal_dummy(event):
+    print('Normal dummy')
 # Record
 def bassRecord(self, event):
     mixer.armTrack(template.bass_trk)

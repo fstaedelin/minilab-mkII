@@ -25,6 +25,8 @@ from utility.cccodes import *
 
 from utility.toolbox import *
 
+from mapping.example import exampleMapping
+
 #import ArturiaVCOL
 
 
@@ -65,23 +67,37 @@ class MiniLabMidiProcessor:
             .NewHandler(SYSEX_INLIST_RESET, sysex_dummy)
         )
         
-        ## Control change dispatcher
+        ## Control change dispatcher. Supports:
+            # Modulation Wheel (reserved CC)
         self._CC_dispatcher = (
             MidiEventDispatcher(by_data1)
             .NewHandler(CC_MODULATION_WHEEL, self.ProcessModWheelEvent)
+            .NewHandler(exampleMapping.knobs[1].DATA_CODE, exampleMapping.knobs[1].callback_fn)
             
         )
         
         ## Master dispatcher
+        # Sends to proper dispatcher depending on received MIDI key (event.status). Supports:
+            # Pitch bends on 16 channels
+            # call to CC generic dispatcher
+            
         self._status_dispatcher = (
             MidiEventDispatcher(by_status)
+            # No need to redirect those because they are caught before
             #.NewHandler(MIDI_STATUS_SYSEX, self.ProcessSysExEvent)
             # Pitch bends can be assigned to processPitchBend at once
             .NewHandlerForKeys(MIDI_STATUS_PITCH_BEND, self.ProcessPitchBendEvent)
             .NewHandler(MIDI_STATUS_CONTROL_CHANGE[MIDI_CHANNEL_INDEX], self.ProcessCommandEvent)
         )
 
-    # DISPATCH
+    
+    # PROCESSORS
+    # Master processor
+    def ProcessEvent(self, event) :
+        print('#######  ... Processing ... #######')
+        return self._status_dispatcher.Dispatch(event)
+    
+    # Sysex processor
     def ProcessSysExEvent(self, event):
         print('####### Processing SysExEvent #######')
         print('event status: ', event.status)
@@ -114,11 +130,3 @@ class MiniLabMidiProcessor:
         checkHandled(event)
         return event.handled
     
-    def ProcessEvent(self, event) :
-        print('#######  ... Processing ... #######')
-        #if event.status in [153,137] :
-        #    return self.OnDrumEvent(event)
-        #else :
-
-        #print(event.status,"\t",event.data1,"\t",event.controlNum,"\t",event.data2,"\t",event.midiId)
-        return self._status_dispatcher.Dispatch(event)

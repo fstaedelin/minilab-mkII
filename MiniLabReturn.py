@@ -32,28 +32,28 @@ class MiniLabLightReturn:
     def RecordReturn(self) :
         if transport.isRecording() :
             print('transport is Recording')
-            SetPadColor(ID_PAD8, C_RED)
+            SetPadColor(ID_PADS[8], COLORS['RED'])
         else :
             print('transport is not Recording')
-            SetPadColor(ID_PAD8, C_YELLOW)
+            SetPadColor(ID_PADS[8], COLORS['YELLOW'])
 
     def PlayReturn(self) :
         if transport.isPlaying():
-            SetPadColor(ID_PAD1, C_RED)
+            SetPadColor(ID_PADS[1], COLORS['RED'])
         else :
-            SetPadColor(ID_PAD1, C_OFF)
+            SetPadColor(ID_PADS[1], COLORS[OFF])
     
     def ProcessPlayBlink(self, value):
         if transport.isPlaying():
             if value == 0 :
-                SetPadColor(ID_PAD1, C_YELLOW)
+                SetPadColor(ID_PADS[1], COLORS['YELLOW'])
             else :
-                SetPadColor(ID_PAD1, C_OFF)
+                SetPadColor(ID_PADS[1], COLORS[OFF])
         
     def ProcessRecordBlink(self, value) :
         if transport.isPlaying():
             if transport.isRecording() :            
                 if value == 0 :
-                    SetPadColor(ID_PAD8, C_RED)
+                    SetPadColor(ID_PADS[8], COLORS['RED'])
                 else :
-                    SetPadColor(ID_PAD8, C_OFF)
+                    SetPadColor(ID_PADS[8], COLORS[OFF])

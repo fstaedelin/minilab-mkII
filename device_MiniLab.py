@@ -4,14 +4,12 @@
 [[
     Surface:    MiniLab mkII
     Developer:    Fef
-    Version:    Alpha 1.0
-    Date:        09/08/2023
+    Version:    Alpha 1.1
+    Date:        30/07/2024
 
 ]]
 """
 
-
-import time
 import midi
 import ui
 import sys
@@ -22,9 +20,9 @@ import playlist
 import patterns
 import device
 
-from MiniLabLeds import MiniLabmk2Led
+
 from MiniLabProcess import MiniLabMidiProcessor
-from MiniLabReturn import MiniLabLightReturn
+from MiniLabControllerConfig import MidiControllerConfig
 
 #import mapping
 import utility.colors as colors
@@ -33,53 +31,20 @@ from utility.toolbox import filterNotes
 from utility.toolbox import filterAftertouch
 #import ArturiaVCOL
 
-## CONSTANT
-
-TEMP = 0.25
-
 #-----------------------------------------------------------------------------------------
 
-# This is the master class. It will run the init lights pattern 
-# and call the others class to process MIDI events
-
-class MidiControllerConfig :
-    def __init__(self):
-        self._lights = MiniLabmk2Led()
-        self._lightReturn = MiniLabLightReturn()
-        
-    def lights(self):
-        return self._lights
-
-    def LightReturn(self) :
-        return self._lightReturn
-    
-    def SetLights(self, led_mapping):
-        return self._lights.SetLights(led_mapping)
-    
-    def SetPadLights(self, color_matrix):
-        return self._lights.SetPadLights(color_matrix)
-    
-    def SetAllPadLights(self, color):
-        return self._lights.SetAllPadLights(color)
-    
-    def SetDefault(self) :
-        self.SetPadLights(colors.default_pad_colors)
-    
-    def SetTransport(self) :
-        self.SetPadLights(colors.transport_pad_colors)
-    
-    def Sync(self):
-        # Syncs up all visual indicators on keyboard with changes from FL Studio.
-        for i in colors.blinking_pattern :
-            self.SetAllPadLights(i)
-            time.sleep(TEMP)
-        self.SetTransport()
 
 _mk2 = MidiControllerConfig()
 _processor = MiniLabMidiProcessor(_mk2)
 
 
 #----------STOCK FL EVENT HANDLER FUNCTIONS ------------------------------------------------------------------------------
+# The event is received by OnMidiIn
+# |-> OnSysEx: Processes SYSEX events
+# |-> OnMidiMsg:
+#       |-> Filters message if note or aftertouch (natively handled)
+#       |-> Else, process event with generic processor
+
 
 # Function called for each event
 def OnMidiIn(event) :
@@ -100,7 +65,7 @@ def OnMidiMsg(event) :
     # Ignore Notes On, Off, (maybe Pitch bends ?) to not transmit them to OnMidiMsg
     if filterNotes(event):
         #event.handled=True
-        print("############## NoteOn/NoteOff Events natively handled ? #############")
+        print("############## NoteOn/NoteOff Events natively handled #############")
     elif filterAftertouch(event):
         print("############## Pad aftertouch suppressed #############")
     elif not _processor.ProcessEvent(event):
@@ -114,15 +79,19 @@ def OnPitchBend(event) :
 
 def OnKeyPressure(event):
     print('############## Enter OnKeyPressure #############')
+    checkHandled(event)
 
 def OnChannelPressure(event):
     print('############## Enter OnChannelPressure #############')
+    checkHandled(event)
 
 def OnControlChange(event):
     print('############## Enter OnControlChange #############')
+    checkHandled(event)
     
 def OnProgramChange(event):
     print('############## Enter OnProgramChange #############')
+    checkHandled(event)
 
 #----------STOCK FL EVENT RETURN FUNCTIONS ------------------------------------------------------------------------------
 # Function called when Play/Pause button is ON
@@ -151,7 +120,7 @@ def OnRefresh(flags):
 # Handles the script when FL Studio closes
 def OnDeInit():
     print('############## Enter OnDeInit #############')
-    return        
+    return
 
 # Function called at refresh, flag value changes depending on the refresh type 
 #def OnRefresh(flags) :
