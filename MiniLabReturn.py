@@ -3,7 +3,8 @@ import ui
 import time
 import transport
 import mixer
-from MiniLabDispatch import send_to_device 
+from utility.lightcommands import *
+from utility.colors import *
 
 
 # This class handles visual feedback functions.
@@ -17,65 +18,42 @@ WidPlugin = 5
 
 
 class MiniLabLightReturn:
-
-    
-
+# 0x02 :write param
+# 0x00 :standard break
+# 0x10 : Set Color
+# 0x7C : Pad ID
+# 0x05 : color
     def MetronomeReturn(self) :
         if ui.isMetronomeEnabled() :
-            send_to_device(bytes([0x02, 0x00, 0x10, 0x7C, 0x05]))
+            print('Metronome Enabled')
         else :
-            send_to_device(bytes([0x02, 0x00, 0x10, 0x7C, 0x00]))
-            
-    def LoopReturn(self) :
-        if ui.isLoopRecEnabled() :
-            send_to_device(bytes([0x02, 0x00, 0x10, 0x7E, 0x11]))
-        else :
-            send_to_device(bytes([0x02, 0x00, 0x10, 0x7E, 0x00]))
-
+            print('Metronome Not Enabled')
 
     def RecordReturn(self) :
         if transport.isRecording() :
-            send_to_device(bytes([0x02, 0x00, 0x10, 0x7A, 0x01]))
+            print('transport is Recording')
+            SetPadColor(ID_PAD8, C_RED)
         else :
-            send_to_device(bytes([0x02, 0x00, 0x10, 0x7A, 0x00]))
-
+            print('transport is not Recording')
+            SetPadColor(ID_PAD8, C_YELLOW)
 
     def PlayReturn(self) :
-        if mixer.getSongTickPos() != 0 :
-            send_to_device(bytes([0x02, 0x00, 0x10, 0x78, 0x04]))
+        if transport.isPlaying():
+            SetPadColor(ID_PAD1, C_RED)
         else :
-            send_to_device(bytes([0x02, 0x00, 0x10, 0x78, 0x00]))
+            SetPadColor(ID_PAD1, C_OFF)
     
-    
-    def BrowserReturn(self) :
-        if ui.getFocused(WidBrowser) == True :
-            send_to_device(bytes([0x02, 0x00, 0x10, 0x7F, 0x7F]))
-        else :
-            send_to_device(bytes([0x02, 0x00, 0x10, 0x7F, 0x00]))
-            
-
     def ProcessPlayBlink(self, value):
-        COLOR_PLAY_ON = bytes([0x02, 0x00, 0x10, 0x78, 0x04]) 
-        COLOR_PLAY_OFF = bytes([0x02, 0x00, 0x10, 0x78, 0x00])
-        if value == 0 :
-            send_to_device(COLOR_PLAY_OFF)
-        else :
-            send_to_device(COLOR_PLAY_ON)
+        if transport.isPlaying():
+            if value == 0 :
+                SetPadColor(ID_PAD1, C_YELLOW)
+            else :
+                SetPadColor(ID_PAD1, C_OFF)
         
     def ProcessRecordBlink(self, value) :
-        if transport.isRecording() :            
-            COLOR_RECORDING_ON = bytes([0x02, 0x00, 0x10, 0x7A, 0x01]) 
-            COLOR_RECORDING_OFF = bytes([0x02, 0x00, 0x10, 0x7A, 0x00])
-            if value == 0 :
-                send_to_device(COLOR_RECORDING_OFF)
-            else :
-                send_to_device(COLOR_RECORDING_ON)
-   
-   
-    def NotBlinkingLed(self) :
-        
-        send_to_device(bytes([0x02, 0x00, 0x10, 0x79, 0x10]))
-        send_to_device(bytes([0x02, 0x00, 0x10, 0x7D, 0x11]))
-        send_to_device(bytes([0x02, 0x00, 0x10, 0x7B, 0x05]))
-
- 
+        if transport.isPlaying():
+            if transport.isRecording() :            
+                if value == 0 :
+                    SetPadColor(ID_PAD8, C_RED)
+                else :
+                    SetPadColor(ID_PAD8, C_OFF)

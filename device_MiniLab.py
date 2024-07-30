@@ -1,11 +1,11 @@
-# name= Arturia MiniLab mkII
+# name=MiniLab - Fef - Stripped
 
 """
 [[
-	Surface:	MiniLab mkII
-	Developer:	Fef
-	Version:	Alpha 1.0
-	Date:		09/08/2023
+    Surface:    MiniLab mkII
+    Developer:    Fef
+    Version:    Alpha 1.0
+    Date:        09/08/2023
 
 ]]
 """
@@ -21,37 +21,28 @@ import channels
 import playlist
 import patterns
 import device
-import mapping
-
-
 
 from MiniLabLeds import MiniLabmk2Led
 from MiniLabProcess import MiniLabMidiProcessor
 from MiniLabReturn import MiniLabLightReturn
-import ArturiaVCOL
+
+#import mapping
+import utility.colors as colors
+from utility.toolbox import checkHandled
+from utility.toolbox import filterNotes
+from utility.toolbox import filterAftertouch
+#import ArturiaVCOL
 
 ## CONSTANT
 
 TEMP = 0.25
-COLOUR = [0x10,0x11,0x04,0x05,0x14,0x7F,0x01]
-C_OFF = 0x00
-C_RED = 0x01
-C_BLUE = 0x10
-C_PURPLE = 0x11
-C_GREEN = 0x04
-C_YELLOW = 0x05
-C_CYAN = 0x14
-C_WHITE = 0x7F
-AL_MEMORY = 0
 
 #-----------------------------------------------------------------------------------------
 
 # This is the master class. It will run the init lights pattern 
 # and call the others class to process MIDI events
 
-
 class MidiControllerConfig :
-
     def __init__(self):
         self._lights = MiniLabmk2Led()
         self._lightReturn = MiniLabLightReturn()
@@ -59,106 +50,115 @@ class MidiControllerConfig :
     def lights(self):
         return self._lights
 
-    def blink(self):
-        return self._blink
-
     def LightReturn(self) :
         return self._lightReturn
-        
-    def Sync(self, colour):
     
-        # Syncs up all visual indicators on keyboard with changes from FL Studio. 
-        
-        led_map = {
-            MiniLabmk2Led.ID_PAD1 : colour,
-            MiniLabmk2Led.ID_PAD2 : colour,
-            MiniLabmk2Led.ID_PAD3 : colour,
-            MiniLabmk2Led.ID_PAD4 : colour,
-            MiniLabmk2Led.ID_PAD5 : colour,
-            MiniLabmk2Led.ID_PAD6 : colour,
-            MiniLabmk2Led.ID_PAD7 : colour,
-            MiniLabmk2Led.ID_PAD8 : colour
-        }
-        self._lights.SetLights(led_map)
-        
-        
-        led_map = {
-            MiniLabmk2Led.ID_PAD9 : C_GREEN,
-            MiniLabmk2Led.ID_PAD10 : C_BLUE,
-            MiniLabmk2Led.ID_PAD11 : C_RED,
-            MiniLabmk2Led.ID_PAD12 : C_YELLOW,
-            MiniLabmk2Led.ID_PAD13 : C_YELLOW,
-            MiniLabmk2Led.ID_PAD14 : C_PURPLE,
-            MiniLabmk2Led.ID_PAD15 : C_CYAN,
-            MiniLabmk2Led.ID_PAD16 : C_WHITE
-        }
-        self._lights.SetLights(led_map)
-        
+    def SetLights(self, led_mapping):
+        return self._lights.SetLights(led_mapping)
+    
+    def SetPadLights(self, color_matrix):
+        return self._lights.SetPadLights(color_matrix)
+    
+    def SetAllPadLights(self, color):
+        return self._lights.SetAllPadLights(color)
+    
+    def SetDefault(self) :
+        self.SetPadLights(colors.default_pad_colors)
+    
+    def SetTransport(self) :
+        self.SetPadLights(colors.transport_pad_colors)
+    
+    def Sync(self):
+        # Syncs up all visual indicators on keyboard with changes from FL Studio.
+        for i in colors.blinking_pattern :
+            self.SetAllPadLights(i)
+            time.sleep(TEMP)
+        self.SetTransport()
 
 _mk2 = MidiControllerConfig()
 _processor = MiniLabMidiProcessor(_mk2)
 
 
-#----------------------------------------------------------------------------------------
+#----------STOCK FL EVENT HANDLER FUNCTIONS ------------------------------------------------------------------------------
 
-# Function called for each event 
-
-def OnMidiMsg(event) :
-    if _processor.ProcessEvent(event):
-        event.handled = False
-
-
-# Function called when FL Studio is starting
-
-def OnInit():
-	print("Keyboard mode mapping :")
-	mapping.KeyboardKnobs.printKnobMap()
-	mapping.KeyboardPads.printPadMap()
-
-	print('Loaded MIDI script for Arturia MiniLab mkII')
-	for i in COLOUR :
-		_mk2.Sync(i)
-		time.sleep(TEMP)
-    
-# Handles the script when FL Studio closes
-
-def OnDeInit():
-    return
+# Function called for each event
+def OnMidiIn(event) :
+    print("############## Event Received #############")
         
-  
-# Function called when Play/Pause button is ON
-
-def OnUpdateBeatIndicator(value):
-    if not AL_MEMORY :
-        _mk2.LightReturn().ProcessPlayBlink(value)
-        _mk2.LightReturn().ProcessRecordBlink(value)
- 
-
-# Function called at refresh, flag value changes depending on the refresh type 
-
-def OnRefresh(flags) :
-    if not AL_MEMORY :
-        _mk2.LightReturn().MetronomeReturn()
-        _mk2.LightReturn().RecordReturn()
-        _mk2.LightReturn().PlayReturn()
-        _mk2.LightReturn().BrowserReturn()
-        _mk2.LightReturn().NotBlinkingLed()
-    
-
-
-def OnPitchBend(event) :
-    if channels.getChannelName(channels.channelNumber()) not in ['Hi Keys', 'Mid Keys'] :
-        channels.setChannelPitch(channels.channelNumber(),(event.data2-64)*(200/64),1)
-        event.handled = True
-    else :
-        event.handled = True
-    
-
+        
 
 def OnSysEx(event) :
-    if not event.sysex in [b'\xf0\x00 k\x7fB\x02\x00\x00.\x00\xf7', b'\xf0\x00 k\x7fB\x02\x00\x00.\x7f\xf7'] :
-        if event.sysex == b'\xf0\x00 k\x7fB\x1b\x00\xf7' :
-            global AL_MEMORY
-            AL_MEMORY = 1
-        else :
-            AL_MEMORY = 0
+    print('############## Enter OnSYSEX #############')
+    _processor.ProcessSysExEvent(event)
+    checkHandled(event)
+        
+    
+# Function called for each event not dealt with by onMidiIn
+def OnMidiMsg(event) :
+    
+    print('############## Enter OnMidiMsg #############')
+    # Ignore Notes On, Off, (maybe Pitch bends ?) to not transmit them to OnMidiMsg
+    if filterNotes(event):
+        #event.handled=True
+        print("############## NoteOn/NoteOff Events natively handled ? #############")
+    elif filterAftertouch(event):
+        print("############## Pad aftertouch suppressed #############")
+    elif not _processor.ProcessEvent(event):
+        print('!\/!\/!\/!\/!\ EVENT NOT PROCESSED /!\/!\/!\/!\/!')
+            
+    #checkHandled(event)
+
+def OnPitchBend(event) :
+    print('############## Enter OnPitchBend #############')
+    checkHandled(event)
+
+def OnKeyPressure(event):
+    print('############## Enter OnKeyPressure #############')
+
+def OnChannelPressure(event):
+    print('############## Enter OnChannelPressure #############')
+
+def OnControlChange(event):
+    print('############## Enter OnControlChange #############')
+    
+def OnProgramChange(event):
+    print('############## Enter OnProgramChange #############')
+
+#----------STOCK FL EVENT RETURN FUNCTIONS ------------------------------------------------------------------------------
+# Function called when Play/Pause button is ON
+def OnUpdateBeatIndicator(value):
+    _mk2.LightReturn().ProcessPlayBlink(value)
+    _mk2.LightReturn().ProcessRecordBlink(value)
+
+#----------REACTIONS TO FL EVENTS FUNCTIONS ------------------------------------------------------------------------------
+
+# Function called when FL Studio is starting
+def OnInit():
+    print('Loaded MIDI script for Arturia MiniLab mkII')
+    _mk2.Sync()
+    
+def OnProjectLoad(status):
+    print('############## Enter OnProjectLoad #############')
+
+def OnRefresh(flags):
+    print('############## Enter OnRefresh #############')
+#    _mk2.LightReturn().MetronomeReturn()
+    _mk2.SetTransport()
+    _mk2.LightReturn().RecordReturn()
+#        _mk2.LightReturn().BrowserReturn()
+#        _mk2.LightReturn().NotBlinkingLed()
+    
+# Handles the script when FL Studio closes
+def OnDeInit():
+    print('############## Enter OnDeInit #############')
+    return        
+
+# Function called at refresh, flag value changes depending on the refresh type 
+#def OnRefresh(flags) :
+#    print("enter OnRefresh")
+#    if not AL_MEMORY :
+#        _mk2.LightReturn().MetronomeReturn()
+#        _mk2.LightReturn().RecordReturn()
+#        #_mk2.LightReturn().PlayReturn()
+#        _mk2.LightReturn().BrowserReturn()
+#        _mk2.LightReturn().NotBlinkingLed()

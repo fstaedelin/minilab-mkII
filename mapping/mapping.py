@@ -1,65 +1,30 @@
-
-## Keyboard Channel
-KB_CHN = 2
+from controlModes import *
+# The midi channel you want to send your info through
+MIDI_SELECTED_CHANNEL = 1
+MIDI_CHANNEL_INDEX = MIDI_SELECTED_CHANNEL-1
 
 ###########################################
 #############    MODES   #############
 ###########################################
-MODE_CONTROL = 0
-MODE_SWITCHEDCONTROL = 1
-MODE_PITCHBEND = 2
-MODE_MIDINOTE = 3
-MODE_DEFAULT = 4  # DEFAULT MODE IS CONTROL ABS
+MODE_SYSEX = 0
+MODE_CONTROL_ABSOLUTE = 1
+MODE_CONTROL_SWITCH = 2
+MODE_CONTROL_RELATIVE = 3
+MODE_PITCHBEND = 4
+MODE_MIDINOTE = 5
+MODE_DEFAULT = 1  # DEFAULT MODE IS CONTROL ABS
 
-#############    CONTROL MODE OPTIONS   #############
-OPTION_CONTROL_ABS = 0
-OPTION_CONTROL_REL1 = 1
-OPTION_CONTROL_REL2 = 2
-OPTION_CONTROL_REL3 = 3
-
-#############    SWITCHED CONTROL MODE OPTIONS   #############
-OPTION_SWITCHEDCONTROL_TOGGLE = 0
-OPTION_SWITCHEDCONTROL_GATE = 1
-
-##### Mode class with mode type, option and values
-class Mode:
-    def __init__(self, modeType=MODE_CONTROL, opt=OPTION_CONTROL_ABS, minV=0, maxV=127):
-        self.setModeType(modeType)
-        self.setOption(opt)
-        self.setMinMax(minV, maxV)
-
-    def setModeType(self, modType):
-        self.modeType = modType
-
-    def setOption(self, opt):
-        self.option = opt
-
-    def setChn(self, chn):
-        self.channel = chn
-
-    def setMinMax(self, minV, maxV):
-        self.minVal = minV
-        self.maxVal = maxV
-    
-    def printMode(self):
-        print("Mode Control : ", self.modeType, ", Option : ", self.option, ", MIN/MAX : ", self.minVal, "/", self.maxVal)
-
-#### Some classic control modes
-modeControlAbs = Mode()
-modeControlRel2 = Mode(MODE_CONTROL, OPTION_CONTROL_ABS, 0, 127)
-modeSwitchedGate = Mode(MODE_SWITCHEDCONTROL, OPTION_SWITCHEDCONTROL_GATE, 0, 1)
-modeSwitchedGate = Mode(MODE_SWITCHEDCONTROL, OPTION_SWITCHEDCONTROL_TOGGLE, 0, 1)
 
 ###########################################
 #############    KNOBS   ##################
 ###########################################
 
 # number of knob-type controls 
-numberOfKnobs = 19
+numberOfKnobs = 20
 
 class Knob:
 
-    def __init__(self, name, mode=modeControlAbs, chn=KB_CHN, CCV=1):
+    def __init__(self, name, mode=MODE_SYSEX, chn=MIDI_SELECTED_CHANNEL, CCV=2):
         self.setName(name)
         self.setMode(mode)
         self.setChannel(chn)
@@ -94,16 +59,16 @@ for i in range(9):
 class KnobMap:
     def __init__(self):
         self.KnobList = []
-        for i in range(numberOfKnobs+1):
+        for i in range(numberOfKnobs):
             name = KnobNames[i]
-            self.KnobList.append(Knob(name, modeControlAbs, KB_CHN, i))
-
+            self.KnobList.append(Knob(name, modeControlAbs, MIDI_SELECTED_CHANNEL, i))
+        
     def offsetKnobsCC(self, offset):
-        for i in range(numberOfKnobs+1):
+        for i in range(numberOfKnobs):
             self.KnobList[i] = Knob(self.KnobList[i].name, self.KnobList[i].mode, self.KnobList[i].channel, i+offset)
     
     def printKnobMap(self):
-        for i in range(numberOfKnobs+1):
+        for i in range(numberOfKnobs):
              self.KnobList[i].printKnob()
 
 ###########################################
@@ -115,7 +80,7 @@ numberOfPads = 16
 
 class Pad:
 
-    def __init__(self, name="Generic Pad", mode=modeControlAbs, chn=KB_CHN, CCV=1):
+    def __init__(self, name="Generic Pad", mode=modeControlAbs, chn=MIDI_SELECTED_CHANNEL, CCV=1):
         self.setName(name)
         self.setMode(mode)
         self.setChannel(chn)
@@ -151,7 +116,7 @@ class PadMap:
         self.PadList = []
         for i in range(numberOfPads):
             name = PadNames[i]
-            self.PadList.append(Pad(name, modeControlAbs, KB_CHN, i+numberOfKnobs+1))
+            self.PadList.append(Pad(name, modeControlAbs, MIDI_SELECTED_CHANNEL, i+numberOfKnobs+1))
 
     def offsetPadsCC(self, offset):
         for i in range(numberOfPads):
@@ -165,15 +130,23 @@ class PadMap:
 # create transport knob and pad mapping
 transportKnobs = KnobMap()
 transportPads = PadMap()
+transportPads.offsetPadsCC(numberOfKnobs)
+transportKnobs.printKnobMap()
+transportPads.printPadMap()
+
 
 # create FPC knob and pad mapping and offset it
 FPCKnobs = KnobMap()
-FPCKnobs.offsetKnobsCC(1+numberOfKnobs+numberOfPads)
+FPCKnobs.offsetKnobsCC(numberOfKnobs+numberOfPads)
 FPCPads = PadMap()
-FPCPads.offsetPadsCC(2*(1+numberOfKnobs)+numberOfPads)
+FPCPads.offsetPadsCC(2*(numberOfKnobs)+numberOfPads)
+FPCKnobs.printKnobMap()
+FPCPads.printPadMap()
 
 # create Keyboard knob and pad mapping and offset it
 KeyboardKnobs = KnobMap()
-KeyboardKnobs.offsetKnobsCC(2*(1+numberOfKnobs+numberOfPads))
+KeyboardKnobs.offsetKnobsCC(2*(numberOfKnobs+numberOfPads))
 KeyboardPads = PadMap()
-KeyboardPads.offsetPadsCC(3*(1+numberOfKnobs)+2*numberOfPads)
+KeyboardPads.offsetPadsCC(3*numberOfKnobs+2*numberOfPads)
+KeyboardKnobs.printKnobMap()
+KeyboardPads.printPadMap()

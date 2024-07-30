@@ -1,8 +1,4 @@
-import device
-
-
-
-# This class is a dispatcher. It will send the MIDI event to the appropriate fonction
+# This class is a dispatcher. It will send the MIDI event to the appropriate function
 
 # MIDI event dispatcher transforms the MIDI event into a value through a transform function provided at construction
 # time. This value is then used as a key into a lookup table that provides a dispatcher and filter function. If the
@@ -35,7 +31,6 @@ class MidiEventDispatcher:
 
 
     def NewHandlerForKeys(self, keys, callback_fn, filter_fn=None):
-        
         # Same function but for a group of controls
         
         for k in keys:
@@ -56,9 +51,3 @@ class MidiEventDispatcher:
             else:
                 processed = True
         return processed
-
-
-
-def send_to_device(data) :
-    #The only function that will send SysEx data to the controller
-    device.midiOutSysex(bytes([0xF0, 0x00, 0x20, 0x6B, 0x7F, 0x42]) + data + bytes([0xF7]))
