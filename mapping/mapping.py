@@ -14,7 +14,6 @@ MODE_PITCHBEND = 4
 MODE_MIDINOTE = 5
 MODE_DEFAULT = 1  # DEFAULT MODE IS CONTROL ABS
 
-
 ###########################################
 #############    KNOBS   ##################
 ###########################################

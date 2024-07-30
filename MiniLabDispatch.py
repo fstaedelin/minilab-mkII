@@ -4,6 +4,8 @@
 # time. This value is then used as a key into a lookup table that provides a dispatcher and filter function. If the
 # filter function returns true, then the event is sent to the dispatcher function.
 
+import utility.midistati as MIDI
+
 class MidiEventDispatcher:
 
 
@@ -35,6 +37,13 @@ class MidiEventDispatcher:
         
         for k in keys:
             self.NewHandler(k, callback_fn, filter_fn=filter_fn)
+        return self
+    
+    def NewCCHandlersFromMapping(self, mapping):
+        # Same function but linking pads
+        for pad in mapping.pads:
+            if pad.MIDI_STATUS in MIDI.MIDI_STATUS_CONTROL_CHANGE:
+                self.NewHandler(pad.DATA_CODE, pad.callback_fn)
         return self
 
 

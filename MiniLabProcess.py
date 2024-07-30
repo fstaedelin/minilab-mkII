@@ -72,7 +72,7 @@ class MiniLabMidiProcessor:
         self._CC_dispatcher = (
             MidiEventDispatcher(by_data1)
             .NewHandler(CC_MODULATION_WHEEL, self.ProcessModWheelEvent)
-            .NewHandler(exampleMapping.knobs[1].DATA_CODE, exampleMapping.knobs[1].callback_fn)
+            .NewCCHandlersFromMapping(exampleMapping)
             
         )
         

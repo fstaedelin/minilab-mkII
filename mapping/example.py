@@ -7,7 +7,7 @@ from utility.colors import COLORS
 from mapping.backend import Pad
 from mapping.backend import Knob
 from mapping.backend import Mapping
-        
+    
 exampleMapping = Mapping(
     # Knob mapping first
     [
