@@ -13,19 +13,14 @@ import midi
 import general
 
 from MiniLabDispatch import MidiEventDispatcher
+
 from utility.flcommands import *
-from utility.sysexcodes import *
+from utility.toolbox import checkHandled, printCommandChannel
 
-from utility.midistati import MIDI_CHANNEL_INDEX
-from utility.midistati import MIDI_STATUS_SYSEX
-from utility.midistati import MIDI_STATUS_CONTROL_CHANGE
-from utility.midistati import MIDI_STATUS_PITCH_BEND
-
-from utility.cccodes import *
-
-from utility.toolbox import *
+from mapping.dictionaries import SYSEX, ControlModes
 
 from mapping.example import exampleMapping
+
 
 #import ArturiaVCOL
 
@@ -53,25 +48,25 @@ class MiniLabMidiProcessor:
         ## SysEx dispatcher
         self._sysex_dispatcher = (
             MidiEventDispatcher(by_sysex)
-            .NewHandler(SYSEX_STOP, sysex_stop)
-            .NewHandler(SYSEX_PLAY, sysex_start)
-            .NewHandler(SYSEX_DEFERRED_PLAY, sysex_dummy)
-            .NewHandler(SYSEX_FAST_FORWARD, sysex_fastforward)
-            .NewHandler(SYSEX_REWIND, sysex_rewind)
-            .NewHandler(SYSEX_REC_STROBE, sysex_rec_strobe)
-            .NewHandler(SYSEX_REC_EXIT, sysex_dummy)
-            .NewHandler(SYSEX_REC_READY, sysex_dummy)
-            .NewHandler(SYSEX_PAUSE, sysex_dummy)
-            .NewHandler(SYSEX_EJECT, sysex_dummy)
-            .NewHandler(SYSEX_CHASE, sysex_dummy)
-            .NewHandler(SYSEX_INLIST_RESET, sysex_dummy)
+            .NewHandler(SYSEX['STOP'], sysex_stop)
+            .NewHandler(SYSEX['PLAY'], sysex_start)
+            .NewHandler(SYSEX['DEFERRED_PLAY'], sysex_dummy)
+            .NewHandler(SYSEX['FAST_FORWARD'], sysex_fastforward)
+            .NewHandler(SYSEX['REWIND'], sysex_rewind)
+            .NewHandler(SYSEX['REC_STROBE'], sysex_rec_strobe)
+            .NewHandler(SYSEX['REC_EXIT'], sysex_dummy)
+            .NewHandler(SYSEX['REC_READY'], sysex_dummy)
+            .NewHandler(SYSEX['PAUSE'], sysex_dummy)
+            .NewHandler(SYSEX['EJECT'], sysex_dummy)
+            .NewHandler(SYSEX['CHASE'], sysex_dummy)
+            .NewHandler(SYSEX['INLIST_RESET'], sysex_dummy)
         )
         
         ## Control change dispatcher. Supports:
             # Modulation Wheel (reserved CC)
         self._CC_dispatcher = (
             MidiEventDispatcher(by_data1)
-            .NewHandler(CC_MODULATION_WHEEL, self.ProcessModWheelEvent)
+            .NewHandler(exampleMapping.mod_wheel.control_data, self.ProcessModWheelEvent)
             .NewCCHandlersFromMapping(exampleMapping)
             
         )
@@ -86,8 +81,8 @@ class MiniLabMidiProcessor:
             # No need to redirect those because they are caught before
             #.NewHandler(MIDI_STATUS_SYSEX, self.ProcessSysExEvent)
             # Pitch bends can be assigned to processPitchBend at once
-            .NewHandlerForKeys(MIDI_STATUS_PITCH_BEND, self.ProcessPitchBendEvent)
-            .NewHandler(MIDI_STATUS_CONTROL_CHANGE[MIDI_CHANNEL_INDEX], self.ProcessCommandEvent)
+            .NewHandler(exampleMapping.pitch_bend.controlMode, self.ProcessPitchBendEvent)
+            .NewHandlerForKeys(ControlModes['CC'], self.ProcessCommandEvent)
         )
 
     

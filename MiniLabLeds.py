@@ -1,7 +1,7 @@
 import device
-import utility.lightcommands as lightcommands
+from mapping.dictionaries import MATRIX_IDS_PAD
 
-from utility.lightcommands import send_to_device 
+from utility.lightcommands import send_to_device, SET_COLOR_COMMAND 
 # MIT License
 # Copyright (c) 2020 Ray Juang
 
@@ -17,7 +17,7 @@ class MiniLabmk2Led:
         led_map = {}
         for r in range(2):
             for c in range(8):
-                led_map[lightcommands.MATRIX_IDS_PAD[r][c]] = matrix_values[r][c]
+                led_map[MATRIX_IDS_PAD[r][c]] = matrix_values[r][c]
         self.SetLights(led_map)
     
     def SetAllPadLights(self, color):
@@ -27,7 +27,7 @@ class MiniLabmk2Led:
         led_map = {}
         for r in range(2):
             for c in range(8):
-                led_map[lightcommands.MATRIX_IDS_PAD[r][c]] = color
+                led_map[MATRIX_IDS_PAD[r][c]] = color
         self.SetLights(led_map)
 
     
@@ -39,4 +39,4 @@ class MiniLabmk2Led:
         data = bytes([])
         for led_id, led_value in led_mapping.items():
             data += bytes([led_id, led_value])
-            send_to_device(lightcommands.SET_COLOR_COMMAND + data)
+            send_to_device(SET_COLOR_COMMAND + data)

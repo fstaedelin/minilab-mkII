@@ -1,0 +1,75 @@
+from utility.midiutils import *
+
+MIDI_STATUS = {
+    'FIRST' : 128,
+    'NOTE_OFF' : setStatusRange(MIDI_STATUS_NOTE_OFF_CHAN1),
+    'NOTE_ON' : setStatusRange(MIDI_STATUS_NOTE_ON_CHAN1),
+    'PAD_AFTERTOUCH' : setStatusRange(MIDI_STATUS_POLYPHONIC_AFTERTOUCH_CHAN1),
+    'CONTROL_CHANGE' : setStatusRange(MIDI_STATUS_CONTROL_CHANGE_CHAN1),
+    'PROGRAM_CHANGE' : setStatusRange(MIDI_STATUS_PROGRAM_CHANGE_CHAN1),
+    'AFTERTOUCH' : setStatusRange(MIDI_STATUS_AFTERTOUCH_CHAN1),
+    'PITCHBEND' : setStatusRange(MIDI_STATUS_PITCH_BEND_CHAN1),
+    'SYSEX' : MIDI_STATUS_SYSEX,
+    'END' : MIDI_STATUS_SYSEX,
+}
+
+ControlModes = {
+    'SYSEX' : MIDI_STATUS['SYSEX'],
+    'CC' : MIDI_STATUS['CONTROL_CHANGE'],
+    'PC' : MIDI_STATUS['PROGRAM_CHANGE'],
+    'PITCHBEND' : MIDI_STATUS['PITCHBEND'],
+    'NOTE_ON' : MIDI_STATUS['NOTE_ON'],
+    'NOTE_OFF' : MIDI_STATUS['NOTE_OFF'],
+    'PAD_AFTERTOUCH' : MIDI_STATUS['PAD_AFTERTOUCH'],
+    'AFTERTOUCH2' : MIDI_STATUS['AFTERTOUCH']
+}
+
+## Reserved CCs:
+RESERVED_CC = {
+    'MOD_WHEEL' : 1
+}
+
+# Color codes
+COLORS = {
+    'OFF' : 0x00,
+    'RED' : 0x01,
+    'BLUE' : 0x10,
+    'PURPLE' : 0x11,
+    'GREEN' : 0x04,
+    'YELLOW' : 0x05,
+    'CYAN' : 0x14,
+    'WHITE' : 0x7F
+}
+
+ID_PADS = {
+    0: 0x70, ## Default initialize to existing pad to not risk messing with sysex ...
+    1: 0x70,    9: 0x78, 
+    2: 0x71,    10: 0x79,
+    3: 0x72,    11: 0x7A,
+    4: 0x73,    12: 0x7B,
+    5: 0x74,    13: 0x7C,
+    6: 0x75,    14: 0x7D,
+    7: 0x76,    15: 0x7E,
+    8: 0x77,    16: 0x7F,
+}
+
+# Matrix with PADS IDS
+MATRIX_IDS_PAD = [
+    [ID_PADS[1], ID_PADS[2], ID_PADS[3], ID_PADS[4], ID_PADS[5], ID_PADS[6], ID_PADS[7], ID_PADS[8]],
+    [ID_PADS[9], ID_PADS[10], ID_PADS[11], ID_PADS[12], ID_PADS[13], ID_PADS[14], ID_PADS[15], ID_PADS[16]],
+]
+
+SYSEX = {
+    'STOP' : b'\xf0\x7f\x7f\x06\x01\xf7',
+    'PLAY' : b'\xf0\x7f\x7f\x06\x02\xf7',
+    'DEFERRED_PLAY' : b'\xf0\x7f\x7f\x06\x03\xf7',
+    'FAST_FORWARD' : b'\xf0\x7f\x7f\x06\x04\xf7',
+    'REWIND' : b'\xf0\x7f\x7f\x06\x05\xf7',
+    'REC_STROBE' : b'\xf0\x7f\x7f\x06\x06\xf7',
+    'REC_EXIT' : b'\xf0\x7f\x7f\x06\x07\xf7',
+    'REC_READY' : b'\xf0\x7f\x7f\x06\x08\xf7',
+    'PAUSE' : b'\xf0\x7f\x7f\x06\x09\xf7',
+    'EJECT' : b'\xf0\x7f\x7f\x06\x0a\xf7',
+    'CHASE' : b'\xf0\x7f\x7f\x06\x0b\xf7',
+    'INLIST_RESET' : b'\xf0\x7f\x7f\x06\x0c\xf7',
+}

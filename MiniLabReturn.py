@@ -3,8 +3,8 @@ import ui
 import time
 import transport
 import mixer
-from utility.lightcommands import *
-from utility.colors import *
+from utility.lightcommands import SetPadColor
+from mapping.dictionaries import COLORS, ID_PADS
 
 
 # This class handles visual feedback functions.
@@ -41,14 +41,14 @@ class MiniLabLightReturn:
         if transport.isPlaying():
             SetPadColor(ID_PADS[1], COLORS['RED'])
         else :
-            SetPadColor(ID_PADS[1], COLORS[OFF])
+            SetPadColor(ID_PADS[1], COLORS['OFF'])
     
     def ProcessPlayBlink(self, value):
         if transport.isPlaying():
             if value == 0 :
                 SetPadColor(ID_PADS[1], COLORS['YELLOW'])
             else :
-                SetPadColor(ID_PADS[1], COLORS[OFF])
+                SetPadColor(ID_PADS[1], COLORS['OFF'])
         
     def ProcessRecordBlink(self, value) :
         if transport.isPlaying():
@@ -56,4 +56,4 @@ class MiniLabLightReturn:
                 if value == 0 :
                     SetPadColor(ID_PADS[8], COLORS['RED'])
                 else :
-                    SetPadColor(ID_PADS[8], COLORS[OFF])
+                    SetPadColor(ID_PADS[8], COLORS['OFF'])

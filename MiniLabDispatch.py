@@ -4,7 +4,8 @@
 # time. This value is then used as a key into a lookup table that provides a dispatcher and filter function. If the
 # filter function returns true, then the event is sent to the dispatcher function.
 
-import utility.midistati as MIDI
+from mapping.dictionaries import ControlModes
+from mapping.MiniLabMk2Mapping import MiniLabMk2Mapping
 
 class MidiEventDispatcher:
 
@@ -39,13 +40,14 @@ class MidiEventDispatcher:
             self.NewHandler(k, callback_fn, filter_fn=filter_fn)
         return self
     
-    def NewCCHandlersFromMapping(self, mapping):
+    def NewCCHandlersFromMapping(self, mapping: MiniLabMk2Mapping):
         # Same function but linking pads
-        for pad in mapping.pads:
-            if pad.MIDI_STATUS in MIDI.MIDI_STATUS_CONTROL_CHANGE:
-                self.NewHandler(pad.DATA_CODE, pad.callback_fn)
+        for controller in mapping.knobs + mapping.pads + [mapping.mod_wheel] :
+            if controller.controlMode in ControlModes['CC']:
+                print('Creating CC handle for :', controller.name)
+                self.NewHandler(controller.control_data, controller.callback_fn)
         return self
-
+    
 
     def Dispatch(self, event):
         # This function will dispatch the event

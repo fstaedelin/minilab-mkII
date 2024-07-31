@@ -1,5 +1,4 @@
-# name=MiniLab - Fef - Stripped
-
+# name=MiniLab - Fef - WIP
 """
 [[
     Surface:    MiniLab mkII
@@ -25,7 +24,6 @@ from MiniLabProcess import MiniLabMidiProcessor
 from MiniLabControllerConfig import MidiControllerConfig
 
 #import mapping
-import utility.colors as colors
 from utility.toolbox import checkHandled
 from utility.toolbox import filterNotes
 from utility.toolbox import filterAftertouch

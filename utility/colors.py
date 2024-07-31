@@ -1,14 +1,4 @@
-# Color codes
-COLORS = {
-    'OFF' : 0x00,
-    'RED' : 0x01,
-    'BLUE' : 0x10,
-    'PURPLE' : 0x11,
-    'GREEN' : 0x04,
-    'YELLOW' : 0x05,
-    'CYAN' : 0x14,
-    'WHITE' : 0x7F
-}
+from mapping.dictionaries import COLORS
 
 # blinking pattern for syncing
 blinking_pattern = [COLORS['BLUE'],COLORS['PURPLE'],COLORS['GREEN'],COLORS['YELLOW'],COLORS['CYAN'],COLORS['WHITE'],COLORS['RED']]
