@@ -1,10 +1,11 @@
+
 from backend.baseclasses import *
 from mapping.dictionaries  import COLORS
 from mapping.dictionaries  import ID_PADS
 from mapping.dictionaries  import RESERVED_CC
 
 """
-This file contains specifications of base classes of controls useful for MiniLabmkII: Pad, Knob, ModWheel, PitchBend
+    This file contains specifications of base classes of controls useful for MiniLabmkII: Pad, Knob, ModWheel, PitchBend
 """
 
 class Pad(multipleControl):

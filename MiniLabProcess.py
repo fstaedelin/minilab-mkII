@@ -19,7 +19,7 @@ from utility.toolbox import checkHandled, printCommandChannel
 
 from mapping.dictionaries import SYSEX, ControlModes
 
-from mapping.example import exampleMapping
+from mapping.example_mapping import exampleMapping
 
 
 #import ArturiaVCOL

@@ -1,3 +1,8 @@
+"""
+    This file contains an implemented example of mapping
+"""
+
+
 from mapping.dictionaries import COLORS
 from mapping.dictionaries import SYSEX
 from mapping.dictionaries import ControlModes
@@ -5,9 +10,9 @@ from utility.flcommands import *
 
 from backend.maincontrollertypes import Pad, Knob
 from mapping.MiniLabMk2Mapping import MiniLabMk2Mapping
-    
-KEYBOARD_CHANNEL = 1
-CONTROL_CHANNEL = 2
+
+# Define the channels set in MIDI Control Center. You should put all buttons of the same mode in the same channel, which shouldn't be the keyboard one
+CONTROL_CHANNEL = 2 # Shouldn't be 1
 
 exampleMapping = MiniLabMk2Mapping(
     CONTROL_CHANNEL,

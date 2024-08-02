@@ -1,4 +1,3 @@
-from utility.midiutils import *
 """
 This file contains dictionnaries :
     ControlModes:       Functionality (str) -> MIDI stati (range),
@@ -9,6 +8,8 @@ This file contains dictionnaries :
     MATRIX_IDS_PADS:    Matrix containing Pads IDS
     
 """
+
+from utility.midiutils import *
 
 ControlModes = {
     'SYSEX' : MIDI_STATUS_SYSEX,

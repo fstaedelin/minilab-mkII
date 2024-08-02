@@ -1,11 +1,11 @@
+"""
+    This file contains base classes of conntrols: Control and multipleControl
+    Controls are linked to a callback function and a MIDI control Mode and argument they send.
+    Multiple Controls allows to initialize a series of same-type controls and automatically numbers them
+"""
+
 from utility.midiutils import changeStatusChannel, statusToChannel
 from mapping.dictionaries import ControlModes
-
-"""
-This file contains base classes of conntrols: Control and multipleControl
-Controls are linked to a callback function and a MIDI control Mode and argument they send.
-Multiple Controls allows to initialize a series of same-type controls and automatically numbers them
-"""
 
 class Control:
     """
