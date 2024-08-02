@@ -1,27 +1,25 @@
 from utility.midiutils import *
-
-MIDI_STATUS = {
-    'FIRST' : 128,
-    'NOTE_OFF' : setStatusRange(MIDI_STATUS_NOTE_OFF_CHAN1),
-    'NOTE_ON' : setStatusRange(MIDI_STATUS_NOTE_ON_CHAN1),
-    'PAD_AFTERTOUCH' : setStatusRange(MIDI_STATUS_POLYPHONIC_AFTERTOUCH_CHAN1),
-    'CONTROL_CHANGE' : setStatusRange(MIDI_STATUS_CONTROL_CHANGE_CHAN1),
-    'PROGRAM_CHANGE' : setStatusRange(MIDI_STATUS_PROGRAM_CHANGE_CHAN1),
-    'AFTERTOUCH' : setStatusRange(MIDI_STATUS_AFTERTOUCH_CHAN1),
-    'PITCHBEND' : setStatusRange(MIDI_STATUS_PITCH_BEND_CHAN1),
-    'SYSEX' : MIDI_STATUS_SYSEX,
-    'END' : MIDI_STATUS_SYSEX,
-}
+"""
+This file contains dictionnaries :
+    ControlModes:       Functionality (str) -> MIDI stati (range),
+    RESERVED_CC:        Functionality (str) -> Reserved CC adresses (int)
+    SYSEX:              Functionality (str) -> SYSEX codes (bytes)
+    COLORS:             Color name    (str) -> color code for lights (int)
+    ID_PADS:            Pad number    (int) -> PAD Codes used to control lights (int)
+    MATRIX_IDS_PADS:    Matrix containing Pads IDS
+    
+"""
 
 ControlModes = {
-    'SYSEX' : MIDI_STATUS['SYSEX'],
-    'CC' : MIDI_STATUS['CONTROL_CHANGE'],
-    'PC' : MIDI_STATUS['PROGRAM_CHANGE'],
-    'PITCHBEND' : MIDI_STATUS['PITCHBEND'],
-    'NOTE_ON' : MIDI_STATUS['NOTE_ON'],
-    'NOTE_OFF' : MIDI_STATUS['NOTE_OFF'],
-    'PAD_AFTERTOUCH' : MIDI_STATUS['PAD_AFTERTOUCH'],
-    'AFTERTOUCH2' : MIDI_STATUS['AFTERTOUCH']
+    'SYSEX' : MIDI_STATUS_SYSEX,
+    'CC' : setStatusRange(MIDI_STATUS_CONTROL_CHANGE_CHAN1),
+    'PC' : setStatusRange(MIDI_STATUS_PROGRAM_CHANGE_CHAN1),
+    'PITCHBEND' : setStatusRange(MIDI_STATUS_PITCH_BEND_CHAN1),
+    'NOTE_ON' : setStatusRange(MIDI_STATUS_NOTE_ON_CHAN1),
+    'NOTE_OFF' : setStatusRange(MIDI_STATUS_NOTE_OFF_CHAN1),
+    'PAD_AFTERTOUCH' : setStatusRange(MIDI_STATUS_POLYPHONIC_AFTERTOUCH_CHAN1),
+    'AFTERTOUCH2' : setStatusRange(MIDI_STATUS_AFTERTOUCH_CHAN1),
+    'OTHER' : range(MIDI_STATUS_SYSEX+1, MIDI_STATUS_END+1)
 }
 
 ## Reserved CCs:
