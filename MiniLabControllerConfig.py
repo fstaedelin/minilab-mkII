@@ -1,9 +1,11 @@
 import time
+import transport
 
 from MiniLabLeds import MiniLabmk2Led
 from MiniLabReturn import MiniLabLightReturn
 
 import utility.colors as colors
+from utility.lightcommands import SetPadColor
 
 from backend.MiniLabMk2Mapping import MiniLabMk2Mapping
 from mappings.example_mapping import exampleMapping
@@ -35,14 +37,15 @@ class MidiControllerConfig :
         return self._lights.SetAllPadLights(color)
     
     def SetDefault(self) :
-        self.SetPadLights(colors.default_pad_colors)
-    
-    def SetTransport(self) :
-        self.SetPadLights(colors.transport_pad_colors)
-    
-    def Sync(self):
+        for pad in self._mapping.pads:
+            SetPadColor(pad.ID_PAD, pad.LED_COLOR)
+            
+    def InitSync(self):
         # Syncs up all visual indicators on keyboard with changes from FL Studio.
         for i in colors.blinking_pattern :
             self.SetAllPadLights(i)
             time.sleep(TEMP)
-        self.SetTransport()
+        self.SetDefault()
+        
+    def Sync(self):
+        self.SetDefault()

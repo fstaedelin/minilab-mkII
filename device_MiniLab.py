@@ -111,16 +111,15 @@ def OnUpdateBeatIndicator(value):
 # Function called when FL Studio is starting
 def OnInit():
     print('Loaded MIDI script for Arturia MiniLab mkII')
-    _mk2.Sync()
+    _mk2.InitSync()
     
 def OnProjectLoad(status):
     print('############## Enter OnProjectLoad #############')
 
 def OnRefresh(flags):
     print('############## Enter OnRefresh #############')
+    _mk2.Sync()
 #    _mk2.LightReturn().MetronomeReturn()
-    _mk2.SetTransport()
-    _mk2.LightReturn().RecordReturn()
 #        _mk2.LightReturn().BrowserReturn()
 #        _mk2.LightReturn().NotBlinkingLed()
     

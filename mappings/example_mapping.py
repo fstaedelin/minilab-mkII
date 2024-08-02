@@ -52,16 +52,16 @@ exampleMapping = MiniLabMk2Mapping(
         Pad(None, 0, 0, COLORS['OFF'], False),
         Pad(None, 0, 0, COLORS['OFF'], False),
         Pad(None, 0, 0, COLORS['OFF'], False),
-        sysexPad(sysex_rec_strobe ,'REC_STROBE', COLORS['RED'], True, COLORS['YELLOW']),
+        sysexPad(sysex_rec_strobe ,'REC_STROBE', COLORS['RED'], False),
         
-        Pad(normal_dummy, ControlModes['CC'], 0, COLORS['RED'], False),
-        Pad(normal_dummy, ControlModes['CC'], 0, COLORS['RED'], False),
-        Pad(normal_dummy, ControlModes['CC'], 0, COLORS['RED'], False),
-        Pad(normal_dummy, ControlModes['CC'], 0, COLORS['RED'], False),
-        Pad(normal_dummy, ControlModes['CC'], 0, COLORS['RED'], False),
-        Pad(normal_dummy, ControlModes['CC'], 0, COLORS['RED'], False),
-        Pad(normal_dummy, ControlModes['CC'], 0, COLORS['RED'], False),
-        Pad(normal_dummy, ControlModes['CC'], 0, COLORS['RED'], False),
+        Pad(normal_dummy, ControlModes['CC'], 0, COLORS['BLUE'], False),
+        Pad(normal_dummy, ControlModes['CC'], 0, COLORS['BLUE'], False),
+        Pad(normal_dummy, ControlModes['CC'], 0, COLORS['BLUE'], False),
+        Pad(normal_dummy, ControlModes['CC'], 0, COLORS['BLUE'], False),
+        Pad(normal_dummy, ControlModes['CC'], 0, COLORS['BLUE'], False),
+        Pad(normal_dummy, ControlModes['CC'], 0, COLORS['BLUE'], False),
+        Pad(normal_dummy, ControlModes['CC'], 0, COLORS['BLUE'], False),
+        Pad(normal_dummy, ControlModes['CC'], 0, COLORS['BLUE'], False),
     ]
 )
          
