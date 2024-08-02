@@ -1,13 +1,25 @@
 from utility.midiutils import changeStatusChannel, statusToChannel
 from mapping.dictionaries import ControlModes
 
+"""
+This file contains base classes of conntrols: Control and multipleControl
+Controls are linked to a callback function and a MIDI control Mode and argument they send.
+Multiple Controls allows to initialize a series of same-type controls and automatically numbers them
+"""
+
 class Control:
-    name='UNIDENTIFIED_CONTROL'
-    callback_fn = None
-    controlMode = ControlModes['CC'][0]
-    control_data = 0
-    
+    """
+        A Control represents a physical button. It has a name, an FL callback function, a MIDI control mode and sends MIDI data.
+    """
     def __init__(self, name = 'UNIDENTIFIED_CONTROL', callback_fn = None, controlMode = ControlModes['CC'][1], data = 0):
+        """A physical button
+
+        Args:
+            name (str, optional): Control name. Defaults to 'UNIDENTIFIED_CONTROL'.
+            callback_fn (function, optional): The function the button should activate. Defaults to None.
+            controlMode (int, optional): First MIDI argument of sent message. Use utility.dictionnaries.ControlModes to map them easily. Defaults to ControlModes['CC'][1].
+            data (int, optional): Second MIDI argument of sent message. Usually between 0 and 127. Defaults to 0.
+        """
         self._setName(name)
         self._setFn(callback_fn)
         self.setControlMode(controlMode)
@@ -32,9 +44,21 @@ class Control:
         return statusToChannel(self.controlMode)
     
 class multipleControl(Control):
-    number = 0
+    """
+        One Control in a series of similar ones. It is a control with a number that can be set via self.setNumber(int)
+        
+    """
     def __init__(self, name = 'UNIDENTIFIED_MULTIPLE_CONTROL', callback_fn = None, controlMode = ControlModes['CC'][1], dataIn = 0):
+        """One Control in a series of similar ones.
+    
+       Args:
+            name (str, optional): Control name. Defaults to 'UNIDENTIFIED_MULTIPLE_CONTROL'.
+            callback_fn (function, optional): The function the button should activate. Defaults to None.
+            controlMode (int, optional): First MIDI argument of sent message. Use utility.dictionnaries.ControlModes to map them easily. Defaults to ControlModes['CC'][1].
+            data (int, optional): Second MIDI argument of sent message. Usually between 0 and 127. Defaults to 0.
+        """
         super().__init__(name, callback_fn, controlMode, dataIn)
+        self.setNumber(0)
         
     def setNumber(self, num):
         self.number = num
