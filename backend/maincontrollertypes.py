@@ -22,14 +22,14 @@ class Pad(multipleControl):
 
 class Knob(multipleControl):    
     def __init__(self, callback_fn=None, controlMode=ControlModes['CC'][1], dataIn=0):
-        super().__init__('KNOB', callback_fn,controlMode, dataIn)
+        super().__init__('KNOB', callback_fn, controlMode, dataIn)
     
     def setNumber(self, num):
         self.number = num
         
 class ModWheel(Control):    
     def __init__(self, callback_fn=None, channel=1):
-        super().__init__('MOD_WHEEL', callback_fn,ControlModes['CC'][channel], RESERVED_CC['MOD_WHEEL'])
+        super().__init__('MOD_WHEEL', callback_fn, ControlModes['CC'][channel], RESERVED_CC['MOD_WHEEL'])
 
 class PitchBend(Control):    
     def __init__(self, callback_fn=None, channel=1):
