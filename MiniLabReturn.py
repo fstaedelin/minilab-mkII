@@ -4,7 +4,7 @@ import time
 import transport
 import mixer
 from utility.lightcommands import SetPadColor
-from mapping.dictionaries import COLORS, ID_PADS
+from backend.dictionaries import COLORS, ID_PADS
 
 
 # This class handles visual feedback functions.

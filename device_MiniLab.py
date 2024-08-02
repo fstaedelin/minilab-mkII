@@ -27,13 +27,16 @@ from MiniLabControllerConfig import MidiControllerConfig
 from utility.toolbox import checkHandled
 from utility.toolbox import filterNotes
 from utility.toolbox import filterAftertouch
+from backend.dictionaries import ControlModes
+
+from mappings.example_mapping import exampleMapping
 #import ArturiaVCOL
 
 #-----------------------------------------------------------------------------------------
 
 
 _mk2 = MidiControllerConfig()
-_processor = MiniLabMidiProcessor(_mk2)
+_processor = MiniLabMidiProcessor(_mk2, exampleMapping)
 
 
 #----------STOCK FL EVENT HANDLER FUNCTIONS ------------------------------------------------------------------------------
@@ -47,12 +50,17 @@ _processor = MiniLabMidiProcessor(_mk2)
 # Function called for each event
 def OnMidiIn(event) :
     print("############## Event Received #############")
-        
+    # If you want to process SYSEX events before FL studio does, you need to do that here.
+    if event.status == ControlModes['SYSEX']:
+        _processor.ProcessSysExEvent(event)
+        checkHandled(event)
+    
+    
         
 
 def OnSysEx(event) :
     print('############## Enter OnSYSEX #############')
-    _processor.ProcessSysExEvent(event)
+    #_processor.ProcessSysExEvent(event)
     checkHandled(event)
         
     

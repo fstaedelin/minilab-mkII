@@ -4,6 +4,7 @@
 
 from backend.maincontrollertypes import *
 from utility.midiutils import MIDI_N_CHANNELS
+from utility.toolbox import checkHandled
 
 class MiniLabMk2Mapping:
     
@@ -31,8 +32,8 @@ class MiniLabMk2Mapping:
             ValueError: If the channel is not in [[ 1, 16  ]]
         """
         self.keyboard_channel = 1
-        self.mod_wheel = ModWheel(self.keyboard_channel)
-        self.pitch_bend = PitchBend(self.keyboard_channel)
+        self.mod_wheel = ModWheel(self.ProcessModWheelEvent, self.keyboard_channel)
+        self.pitch_bend = PitchBend(self.ProcessPitchBendEvent, self.keyboard_channel)
         i=0
         
         # Sets up the pad numbers, IDs and names
@@ -52,17 +53,17 @@ class MiniLabMk2Mapping:
         for knob in knobList:
             i+=1
             knob.setNumber(i)
+            knob.setDefaultName()
             if knob.number > self.NUMBER_OF_PADS:
-                if knob.number == 18:
-                    knob._setName(self.name+'1+SHIFT')
+                if knob.number == 17:
+                    knob._setName('KNOB1+SHIFT')
+                elif knob.number == 19:
+                    knob._setName('KNOB9+SHIFT')
+                elif knob.number ==18:
+                    knob._setName('KNOB1 SWITCH')
                 elif knob.number == 20:
-                    knob._setName(self.name+'9+SHIFT')
-                elif knob.number ==19:
-                    knob._setName(self.name+'1 SWITCH')
-                elif knob.number ==21:
-                    knob._setName(self.name+'9 SWITCH')
-            else:
-                knob.setDefaultName()
+                    knob._setName('KNOB9 SWITCH')
+            
             self.knobs.append(knob)
         
         # checks if there are unmapped knobs
@@ -92,3 +93,17 @@ class MiniLabMk2Mapping:
                 #print(controller.name)
                 #print(chn)
                 controller.changeChannel(chn)
+                
+    def ProcessModWheelEvent(self, event):
+        print('####### Processing ModWheelEvent #######')
+        # what to do ?
+        print('TODO')
+        return event.handled
+        
+    def ProcessPitchBendEvent(self, event):
+        print('####### Processing PitchBendlEvent #######')
+        # what to do ?
+        print('TODO')
+        event.handled = True
+        checkHandled(event)
+        return event.handled

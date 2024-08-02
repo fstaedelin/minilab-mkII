@@ -5,7 +5,7 @@
 """
 
 from utility.midiutils import changeStatusChannel, statusToChannel
-from mapping.dictionaries import ControlModes
+from backend.dictionaries import ControlModes
 
 class Control:
     """

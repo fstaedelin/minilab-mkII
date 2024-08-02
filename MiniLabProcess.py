@@ -17,10 +17,9 @@ from MiniLabDispatch import MidiEventDispatcher
 from utility.flcommands import *
 from utility.toolbox import checkHandled, printCommandChannel
 
-from mapping.dictionaries import SYSEX, ControlModes
+from backend.dictionaries import SYSEX, ControlModes
 
-from mapping.example_mapping import exampleMapping
-
+from backend.MiniLabMk2Mapping import MiniLabMk2Mapping
 
 #import ArturiaVCOL
 
@@ -34,7 +33,7 @@ class MiniLabMidiProcessor:
     def _is_pressed(event):
         return event.controlVal != 0
 
-    def __init__(self, controller):
+    def __init__(self, controller, mapping: MiniLabMk2Mapping):
         def by_data1(event) : return event.data1
         def by_data2(event) : return event.data2
         def by_status(event) : return event.status
@@ -43,32 +42,23 @@ class MiniLabMidiProcessor:
         def ignore_press(event): return not self._is_pressed(event)
 
         self._controller = controller
+        self.mapping = mapping
+        #self.mapping.mod_wheel._setFn(self.ProcessModWheelEvent)
+        self.natively_handled = [ControlModes['NOTE_OFF']]+[ControlModes['NOTE_ON']]+[ControlModes['PAD_AFTERTOUCH']]
         
     # DISPATCHERS            
         ## SysEx dispatcher
         self._sysex_dispatcher = (
             MidiEventDispatcher(by_sysex)
-            .NewHandler(SYSEX['STOP'], sysex_stop)
-            .NewHandler(SYSEX['PLAY'], sysex_start)
-            .NewHandler(SYSEX['DEFERRED_PLAY'], sysex_dummy)
-            .NewHandler(SYSEX['FAST_FORWARD'], sysex_fastforward)
-            .NewHandler(SYSEX['REWIND'], sysex_rewind)
-            .NewHandler(SYSEX['REC_STROBE'], sysex_rec_strobe)
-            .NewHandler(SYSEX['REC_EXIT'], sysex_dummy)
-            .NewHandler(SYSEX['REC_READY'], sysex_dummy)
-            .NewHandler(SYSEX['PAUSE'], sysex_dummy)
-            .NewHandler(SYSEX['EJECT'], sysex_dummy)
-            .NewHandler(SYSEX['CHASE'], sysex_dummy)
-            .NewHandler(SYSEX['INLIST_RESET'], sysex_dummy)
+            .NewSYSEXHandlersFromMapping(self.mapping)
         )
         
         ## Control change dispatcher. Supports:
             # Modulation Wheel (reserved CC)
         self._CC_dispatcher = (
             MidiEventDispatcher(by_data1)
-            .NewHandler(exampleMapping.mod_wheel.control_data, self.ProcessModWheelEvent)
-            .NewCCHandlersFromMapping(exampleMapping)
-            
+            ## handles knobs, pads and the modulation wheel
+            .NewCCHandlersFromMapping(self.mapping)
         )
         
         ## Master dispatcher
@@ -81,7 +71,7 @@ class MiniLabMidiProcessor:
             # No need to redirect those because they are caught before
             #.NewHandler(MIDI_STATUS_SYSEX, self.ProcessSysExEvent)
             # Pitch bends can be assigned to processPitchBend at once
-            .NewHandler(exampleMapping.pitch_bend.controlMode, self.ProcessPitchBendEvent)
+            .NewHandler(self.mapping.pitch_bend.controlMode, self.mapping.ProcessPitchBendEvent)
             .NewHandlerForKeys(ControlModes['CC'], self.ProcessCommandEvent)
         )
 
@@ -90,15 +80,19 @@ class MiniLabMidiProcessor:
     # Master processor
     def ProcessEvent(self, event) :
         print('#######  ... Processing ... #######')
-        return self._status_dispatcher.Dispatch(event)
+        if event.status not in self.natively_handled:
+            return self._status_dispatcher.Dispatch(event)
+        else:
+            return False
     
     # Sysex processor
     def ProcessSysExEvent(self, event):
-        print('####### Processing SysExEvent #######')
-        print('event status: ', event.status)
-        print('event sysex: ', event.sysex)
-        event.handled = self._sysex_dispatcher.Dispatch(event)
-        checkHandled(event)
+        if not event.sysex == None:
+            print('####### Processing SysExEvent #######')
+            print('event status: ', event.status)
+            print('event sysex: ', event.sysex)
+            event.handled = self._sysex_dispatcher.Dispatch(event)
+            checkHandled(event)
         return event.handled
 
     def ProcessCommandEvent(self, event):
@@ -107,21 +101,5 @@ class MiniLabMidiProcessor:
         if event.handled == False:
             print('/!\/!\/!\/!\/!\ CC not set ! /!\/!\/!\/!\/!')
             printCommandChannel(event)
-        return event.handled
-    
-    def ProcessModWheelEvent(self, event):
-        print('####### Processing ModWheelEvent #######')
-        # what to do ?
-        print('TODO')
-        event.handled = True
-        checkHandled(event)
-        return event.handled
-        
-    def ProcessPitchBendEvent(self, event):
-        print('####### Processing PitchBendlEvent #######')
-        # what to do ?
-        print('TODO')
-        event.handled = True
-        checkHandled(event)
         return event.handled
     

@@ -5,7 +5,7 @@ from MiniLabReturn import MiniLabLightReturn
 
 import utility.colors as colors
 
-from mapping import example_mapping
+import mappings.example_mapping as example_mapping
 # This is the master class. It will run the init lights pattern 
 # and call the others class to process MIDI events
 

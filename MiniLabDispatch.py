@@ -4,8 +4,8 @@
 # time. This value is then used as a key into a lookup table that provides a dispatcher and filter function. If the
 # filter function returns true, then the event is sent to the dispatcher function.
 
-from mapping.dictionaries import ControlModes
-from mapping.MiniLabMk2Mapping import MiniLabMk2Mapping
+from backend.dictionaries import ControlModes
+from backend.MiniLabMk2Mapping import MiniLabMk2Mapping
 
 class MidiEventDispatcher:
 
@@ -45,6 +45,13 @@ class MidiEventDispatcher:
         for controller in mapping.knobs + mapping.pads + [mapping.mod_wheel] :
             if controller.controlMode in ControlModes['CC']:
                 print('Creating CC handle for :', controller.name)
+                self.NewHandler(controller.control_data, controller.callback_fn)
+        return self
+    
+    def NewSYSEXHandlersFromMapping(self, mapping:MiniLabMk2Mapping):
+        for controller in mapping.pads:
+            if controller.controlMode == ControlModes['SYSEX']:
+                print('Creating SYSEX handle for :', controller.name)
                 self.NewHandler(controller.control_data, controller.callback_fn)
         return self
     

@@ -1,4 +1,4 @@
-from mapping.dictionaries import *
+from backend.dictionaries import *
 
 def checkHandled(event):
     if event.handled == False:

@@ -1,5 +1,5 @@
 import device
-from mapping.dictionaries import MATRIX_IDS_PAD
+from backend.dictionaries import MATRIX_IDS_PAD
 
 from utility.lightcommands import send_to_device, SET_COLOR_COMMAND 
 # MIT License

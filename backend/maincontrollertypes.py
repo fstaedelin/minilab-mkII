@@ -1,15 +1,15 @@
 
 from backend.baseclasses import *
-from mapping.dictionaries  import COLORS
-from mapping.dictionaries  import ID_PADS
-from mapping.dictionaries  import RESERVED_CC
+from backend.dictionaries  import COLORS
+from backend.dictionaries  import ID_PADS
+from backend.dictionaries  import RESERVED_CC
 
 """
     This file contains specifications of base classes of controls useful for MiniLabmkII: Pad, Knob, ModWheel, PitchBend
 """
 
 class Pad(multipleControl):
-    def __init__(self, callback_fn=None, controlMode=ControlModes['CC'][1], dataOut=0, LED_COLOR = COLORS['RED'], LED_BLINKONPLAY = False, LED_BLINKCOLOR = COLORS['OFF']):
+    def __init__(self, callback_fn=None, controlMode=ControlModes['CC'][0], dataOut=0, LED_COLOR = COLORS['RED'], LED_BLINKONPLAY = False, LED_BLINKCOLOR = COLORS['OFF']):
         """A Pad.
 
         Args:
@@ -31,7 +31,7 @@ class Pad(multipleControl):
         self.ID_PAD = ID_PADS[self.number]
 
 class Knob(multipleControl):
-    def __init__(self, callback_fn=None, controlMode=ControlModes['CC'][1], dataOut=0):
+    def __init__(self, callback_fn=None, controlMode=ControlModes['CC'][0], dataOut=0):
         """A Knob.
 
         Args:
@@ -53,7 +53,7 @@ class ModWheel(Control):
             controlMode (int, optional): First MIDI argument of sent message. Use utility.dictionnaries.ControlModes to map them easily. Defaults to ControlModes['CC'][1].
             dataOut (int, optional): Second MIDI argument of sent message. Usually between 0 and 127. Defaults to 0.
         """
-        super().__init__('MOD_WHEEL', callback_fn, ControlModes['CC'][channel], RESERVED_CC['MOD_WHEEL'])
+        super().__init__('MOD_WHEEL', callback_fn, ControlModes['CC'][channel-1], RESERVED_CC['MOD_WHEEL'])
 
 class PitchBend(Control):    
     def __init__(self, callback_fn=None, channel=1):
@@ -61,7 +61,6 @@ class PitchBend(Control):
 
         Args:
             callback_fn (function, optional): The function the button should activate. Defaults to None.
-            controlMode (int, optional): First MIDI argument of sent message. Use utility.dictionnaries.ControlModes to map them easily. Defaults to ControlModes['CC'][1].
-            dataOut (int, optional): Second MIDI argument of sent message. Usually between 0 and 127. Defaults to 0.
+            channel (int, optional): The channel to set it to.
         """
-        super().__init__('PITCH_BEND', callback_fn, ControlModes['PITCHBEND'][channel])
+        super().__init__('PITCH_BEND', callback_fn, ControlModes['PITCHBEND'][channel-1])

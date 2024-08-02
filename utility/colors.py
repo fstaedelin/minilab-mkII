@@ -1,4 +1,4 @@
-from mapping.dictionaries import COLORS
+from backend.dictionaries import COLORS
 
 # blinking pattern for syncing
 blinking_pattern = [COLORS['BLUE'],COLORS['PURPLE'],COLORS['GREEN'],COLORS['YELLOW'],COLORS['CYAN'],COLORS['WHITE'],COLORS['RED']]
