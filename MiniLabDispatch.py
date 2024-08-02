@@ -52,13 +52,13 @@ class MidiEventDispatcher:
         for controller in mapping.pads:
             if controller.controlMode == ControlModes['SYSEX']:
                 print('Creating SYSEX handle for :', controller.name)
+                print(controller.control_data)
                 self.NewHandler(controller.control_data, controller.callback_fn)
         return self
     
 
     def Dispatch(self, event):
         # This function will dispatch the event
-    
         key = self._transform_fn(event)
         processed = False
         if key in self._dispatch_map:

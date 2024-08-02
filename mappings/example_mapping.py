@@ -8,7 +8,7 @@ from backend.dictionaries import SYSEX
 from backend.dictionaries import ControlModes
 from utility.flcommands import *
 
-from backend.maincontrollertypes import Pad, Knob
+from backend.maincontrollertypes import Pad, sysexPad, Knob
 from backend.MiniLabMk2Mapping import MiniLabMk2Mapping
 
 # Define the channels set in MIDI Control Center. You should put all buttons of the same mode in the same channel, which shouldn't be the keyboard one
@@ -45,14 +45,14 @@ exampleMapping = MiniLabMk2Mapping(
     
     #Then Pads
     [
-        Pad(sysex_start, ControlModes['SYSEX'], SYSEX['PLAY'], COLORS['GREEN'], True),
-        Pad(sysex_stop, ControlModes['SYSEX'], SYSEX['STOP'], COLORS['RED'], False),
-        Pad(sysex_rewind, ControlModes['SYSEX'], SYSEX['REWIND'], COLORS['CYAN'], False),
-        Pad(sysex_fastforward, ControlModes['SYSEX'], SYSEX['FAST_FORWARD'], COLORS['CYAN'], False),
+        sysexPad(callback_fn=sysex_start, sysexFn='PLAY', LED_COLOR=COLORS['GREEN'], LED_BLINKONPLAY=True, LED_BLINKCOLOR=COLORS['YELLOW']),
+        sysexPad(sysex_stop, 'STOP', COLORS['RED'], False),
+        sysexPad(sysex_rewind, 'REWIND', COLORS['CYAN'], False),
+        sysexPad(sysex_fastforward ,'FAST_FORWARD', COLORS['CYAN'], False),
         Pad(None, 0, 0, COLORS['OFF'], False),
         Pad(None, 0, 0, COLORS['OFF'], False),
         Pad(None, 0, 0, COLORS['OFF'], False),
-        Pad(sysex_rec_strobe, ControlModes['SYSEX'], SYSEX['REC_STROBE'], COLORS['YELLOW'], False),
+        sysexPad(sysex_rec_strobe ,'REC_STROBE', COLORS['RED'], True, COLORS['YELLOW']),
         
         Pad(normal_dummy, ControlModes['CC'], 0, COLORS['RED'], False),
         Pad(normal_dummy, ControlModes['CC'], 0, COLORS['RED'], False),

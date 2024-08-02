@@ -35,8 +35,8 @@ from mappings.example_mapping import exampleMapping
 #-----------------------------------------------------------------------------------------
 
 
-_mk2 = MidiControllerConfig()
-_processor = MiniLabMidiProcessor(_mk2, exampleMapping)
+_mk2 = MidiControllerConfig(exampleMapping)
+_processor = MiniLabMidiProcessor(_mk2)
 
 
 #----------STOCK FL EVENT HANDLER FUNCTIONS ------------------------------------------------------------------------------
@@ -102,8 +102,9 @@ def OnProgramChange(event):
 #----------STOCK FL EVENT RETURN FUNCTIONS ------------------------------------------------------------------------------
 # Function called when Play/Pause button is ON
 def OnUpdateBeatIndicator(value):
-    _mk2.LightReturn().ProcessPlayBlink(value)
-    _mk2.LightReturn().ProcessRecordBlink(value)
+    _mk2.LightReturn().ProcessBlink(value)
+    #_mk2.LightReturn().ProcessPlayBlink(value)
+    #_mk2.LightReturn().ProcessRecordBlink(value)
 
 #----------REACTIONS TO FL EVENTS FUNCTIONS ------------------------------------------------------------------------------
 

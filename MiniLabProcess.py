@@ -20,6 +20,7 @@ from utility.toolbox import checkHandled, printCommandChannel
 from backend.dictionaries import SYSEX, ControlModes
 
 from backend.MiniLabMk2Mapping import MiniLabMk2Mapping
+from MiniLabControllerConfig import MidiControllerConfig
 
 #import ArturiaVCOL
 
@@ -33,7 +34,7 @@ class MiniLabMidiProcessor:
     def _is_pressed(event):
         return event.controlVal != 0
 
-    def __init__(self, controller, mapping: MiniLabMk2Mapping):
+    def __init__(self, controller: MidiControllerConfig):
         def by_data1(event) : return event.data1
         def by_data2(event) : return event.data2
         def by_status(event) : return event.status
@@ -42,7 +43,6 @@ class MiniLabMidiProcessor:
         def ignore_press(event): return not self._is_pressed(event)
 
         self._controller = controller
-        self.mapping = mapping
         #self.mapping.mod_wheel._setFn(self.ProcessModWheelEvent)
         self.natively_handled = [ControlModes['NOTE_OFF']]+[ControlModes['NOTE_ON']]+[ControlModes['PAD_AFTERTOUCH']]
         
@@ -50,7 +50,7 @@ class MiniLabMidiProcessor:
         ## SysEx dispatcher
         self._sysex_dispatcher = (
             MidiEventDispatcher(by_sysex)
-            .NewSYSEXHandlersFromMapping(self.mapping)
+            .NewSYSEXHandlersFromMapping(self._controller._mapping)
         )
         
         ## Control change dispatcher. Supports:
@@ -58,7 +58,7 @@ class MiniLabMidiProcessor:
         self._CC_dispatcher = (
             MidiEventDispatcher(by_data1)
             ## handles knobs, pads and the modulation wheel
-            .NewCCHandlersFromMapping(self.mapping)
+            .NewCCHandlersFromMapping(self._controller._mapping)
         )
         
         ## Master dispatcher
@@ -71,7 +71,7 @@ class MiniLabMidiProcessor:
             # No need to redirect those because they are caught before
             #.NewHandler(MIDI_STATUS_SYSEX, self.ProcessSysExEvent)
             # Pitch bends can be assigned to processPitchBend at once
-            .NewHandler(self.mapping.pitch_bend.controlMode, self.mapping.ProcessPitchBendEvent)
+            .NewHandler(self._controller._mapping.pitch_bend.controlMode, self._controller._mapping.ProcessPitchBendEvent)
             .NewHandlerForKeys(ControlModes['CC'], self.ProcessCommandEvent)
         )
 
@@ -92,7 +92,6 @@ class MiniLabMidiProcessor:
             print('event status: ', event.status)
             print('event sysex: ', event.sysex)
             event.handled = self._sysex_dispatcher.Dispatch(event)
-            checkHandled(event)
         return event.handled
 
     def ProcessCommandEvent(self, event):

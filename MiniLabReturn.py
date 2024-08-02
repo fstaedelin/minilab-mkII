@@ -15,7 +15,7 @@ WidChannelRack = 1
 WidPlaylist = 2
 WidBrowser = 4
 WidPlugin = 5
-
+from backend.MiniLabMk2Mapping import MiniLabMk2Mapping
 
 class MiniLabLightReturn:
 # 0x02 :write param
@@ -23,6 +23,21 @@ class MiniLabLightReturn:
 # 0x10 : Set Color
 # 0x7C : Pad ID
 # 0x05 : color
+    def __init__(self, mapping: MiniLabMk2Mapping):
+        self.padIDs = []
+        self.fixedpadcolors = []
+        self.blinkableIDs = []
+        self.blinkingcolor1 = []
+        self.blinkingcolor2 = []
+        for pad in mapping.pads:
+            self.padIDs.append(pad.ID_PAD)
+            self.fixedpadcolors.append(pad.LED_COLOR)
+            if pad.LED_BLINKONPLAY:
+                self.blinkableIDs.append(pad.ID_PAD)
+                self.blinkingcolor1.append(pad.LED_COLOR)
+                self.blinkingcolor2.append(pad.LED_BLINKCOLOR)
+        
+        
     def MetronomeReturn(self) :
         if ui.isMetronomeEnabled() :
             print('Metronome Enabled')
@@ -42,18 +57,14 @@ class MiniLabLightReturn:
             SetPadColor(ID_PADS[1], COLORS['RED'])
         else :
             SetPadColor(ID_PADS[1], COLORS['OFF'])
-    
-    def ProcessPlayBlink(self, value):
+                    
+    def ProcessBlink(self, value):
         if transport.isPlaying():
-            if value == 0 :
-                SetPadColor(ID_PADS[1], COLORS['YELLOW'])
-            else :
-                SetPadColor(ID_PADS[1], COLORS['OFF'])
-        
-    def ProcessRecordBlink(self, value) :
-        if transport.isPlaying():
-            if transport.isRecording() :            
-                if value == 0 :
-                    SetPadColor(ID_PADS[8], COLORS['RED'])
-                else :
-                    SetPadColor(ID_PADS[8], COLORS['OFF'])
+                i=0
+                for blinkingpad in self.blinkableIDs:
+                    if value == 0:
+                        SetPadColor(blinkingpad, self.blinkingcolor2[i])
+                    else:
+                        SetPadColor(blinkingpad, COLORS['OFF'])
+                    i+=1
+            

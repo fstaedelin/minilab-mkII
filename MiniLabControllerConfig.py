@@ -5,7 +5,8 @@ from MiniLabReturn import MiniLabLightReturn
 
 import utility.colors as colors
 
-import mappings.example_mapping as example_mapping
+from backend.MiniLabMk2Mapping import MiniLabMk2Mapping
+from mappings.example_mapping import exampleMapping
 # This is the master class. It will run the init lights pattern 
 # and call the others class to process MIDI events
 
@@ -13,9 +14,10 @@ TEMP = 0.25
 
 class MidiControllerConfig :
     
-    def __init__(self):
+    def __init__(self, mapping: MiniLabMk2Mapping):
         self._lights = MiniLabmk2Led()
-        self._lightReturn = MiniLabLightReturn()
+        self._lightReturn = MiniLabLightReturn(mapping)
+        self._mapping = mapping
         
     def lights(self):
         return self._lights
