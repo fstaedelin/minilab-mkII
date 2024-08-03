@@ -70,8 +70,7 @@ def OnMidiMsg(event) :
     print('############## Enter OnMidiMsg #############')
     # Ignore Notes On, Off, (maybe Pitch bends ?) to not transmit them to OnMidiMsg
     if filterNotes(event):
-        #event.handled=True
-        print("############## NoteOn/NoteOff Events natively handled #############")
+        print("############## Notes filtered #############")
     elif filterAftertouch(event):
         print("############## Pad aftertouch suppressed #############")
     elif not _processor.ProcessEvent(event):
@@ -102,9 +101,7 @@ def OnProgramChange(event):
 #----------STOCK FL EVENT RETURN FUNCTIONS ------------------------------------------------------------------------------
 # Function called when Play/Pause button is ON
 def OnUpdateBeatIndicator(value):
-    _mk2.LightReturn().ProcessBlink(value)
-    #_mk2.LightReturn().ProcessPlayBlink(value)
-    #_mk2.LightReturn().ProcessRecordBlink(value)
+    _mk2.ProcessBlink(value)
 
 #----------REACTIONS TO FL EVENTS FUNCTIONS ------------------------------------------------------------------------------
 
@@ -119,21 +116,8 @@ def OnProjectLoad(status):
 def OnRefresh(flags):
     print('############## Enter OnRefresh #############')
     _mk2.Sync()
-#    _mk2.LightReturn().MetronomeReturn()
-#        _mk2.LightReturn().BrowserReturn()
-#        _mk2.LightReturn().NotBlinkingLed()
-    
+
 # Handles the script when FL Studio closes
 def OnDeInit():
     print('############## Enter OnDeInit #############')
     return
-
-# Function called at refresh, flag value changes depending on the refresh type 
-#def OnRefresh(flags) :
-#    print("enter OnRefresh")
-#    if not AL_MEMORY :
-#        _mk2.LightReturn().MetronomeReturn()
-#        _mk2.LightReturn().RecordReturn()
-#        #_mk2.LightReturn().PlayReturn()
-#        _mk2.LightReturn().BrowserReturn()
-#        _mk2.LightReturn().NotBlinkingLed()

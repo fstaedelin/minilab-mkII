@@ -47,22 +47,23 @@ exampleMapping = MiniLabMk2Mapping(
     [
         sysexPad(callback_fn=sysex_start, sysexFn='PLAY', LED_COLOR=COLORS['GREEN'], LED_BLINKONPLAY=True, LED_BLINKCOLOR=COLORS['YELLOW']),
         sysexPad(sysex_stop, 'STOP', COLORS['RED'], False),
-        sysexPad(sysex_rewind, 'REWIND', COLORS['CYAN'], False),
-        sysexPad(sysex_fastforward ,'FAST_FORWARD', COLORS['CYAN'], False),
-        Pad(None, 0, 0, COLORS['OFF'], False),
-        Pad(None, 0, 0, COLORS['OFF'], False),
-        Pad(None, 0, 0, COLORS['OFF'], False),
+        Pad(LED_COLOR=COLORS['OFF']),
         sysexPad(sysex_rec_strobe ,'REC_STROBE', COLORS['RED'], False),
+        Pad(LED_COLOR=COLORS['BLUE']),
+        Pad(LED_COLOR=COLORS['BLUE']),
+        Pad(LED_COLOR=COLORS['BLUE']),
+        Pad(LED_COLOR=COLORS['BLUE']),
         
-        Pad(normal_dummy, ControlModes['CC'], 0, COLORS['BLUE'], False),
-        Pad(normal_dummy, ControlModes['CC'], 0, COLORS['BLUE'], False),
-        Pad(normal_dummy, ControlModes['CC'], 0, COLORS['BLUE'], False),
-        Pad(normal_dummy, ControlModes['CC'], 0, COLORS['BLUE'], False),
-        Pad(normal_dummy, ControlModes['CC'], 0, COLORS['BLUE'], False),
-        Pad(normal_dummy, ControlModes['CC'], 0, COLORS['BLUE'], False),
-        Pad(normal_dummy, ControlModes['CC'], 0, COLORS['BLUE'], False),
-        Pad(normal_dummy, ControlModes['CC'], 0, COLORS['BLUE'], False),
-    ]
+        Pad(LED_COLOR=COLORS['BLUE']),
+        Pad(LED_COLOR=COLORS['BLUE']),
+        Pad(LED_COLOR=COLORS['BLUE']),
+        Pad(LED_COLOR=COLORS['BLUE']),
+        Pad(LED_COLOR=COLORS['BLUE']),
+        Pad(LED_COLOR=COLORS['BLUE']),
+        Pad(LED_COLOR=COLORS['BLUE']),
+        Pad(LED_COLOR=COLORS['BLUE']),
+    ]      
+
 )
          
         

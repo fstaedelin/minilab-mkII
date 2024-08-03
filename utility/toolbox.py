@@ -20,9 +20,11 @@ def printCommandChannel(event):
         print('event status: ', event.status)
 
 def filterNotes(event):
+    filtered = False
     if (event.status in ControlModes['NOTE_OFF']) or  (event.status in ControlModes['NOTE_ON']):
-        event.handled = True
-    return event.handled
+        print('MIDI notes natively handled')
+        filtered = True
+    return filtered
 
 def filterAftertouch(event):
     if (event.status in ControlModes['PAD_AFTERTOUCH']):
