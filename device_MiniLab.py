@@ -10,6 +10,8 @@
 """
 
 import midi
+import utils
+
 import ui
 import sys
 import mixer

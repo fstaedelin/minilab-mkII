@@ -1,37 +1,9 @@
 ### Contains definitions of MIDI statuses reported in ../doc/Expanded Messages List (Status Bytes).pdf
 # This corresponds to event.status in midiEvents
 
+from midi import *
 # Max supported MIDI channels ?
 MIDI_N_CHANNELS=16
-
-## Here, could use the fl-api-stubs extension to retrieve midi codes from FL Studio
-### DID NOT DO IT because fl python external libraries are not intuitive.
-### Channel one of channel-linked MIDI functionalities
-MIDI_STATUS_NOTE_OFF_CHAN1 = 128
-MIDI_STATUS_BEGIN = MIDI_STATUS_NOTE_OFF_CHAN1
-MIDI_STATUS_NOTE_ON_CHAN1 = MIDI_STATUS_NOTE_OFF_CHAN1 + MIDI_N_CHANNELS
-MIDI_STATUS_POLYPHONIC_AFTERTOUCH_CHAN1 = MIDI_STATUS_NOTE_OFF_CHAN1 + 2*MIDI_N_CHANNELS
-MIDI_STATUS_CONTROL_CHANGE_CHAN1 = MIDI_STATUS_NOTE_OFF_CHAN1 + 3*MIDI_N_CHANNELS
-MIDI_STATUS_PROGRAM_CHANGE_CHAN1 = MIDI_STATUS_NOTE_OFF_CHAN1 + 4*MIDI_N_CHANNELS
-MIDI_STATUS_AFTERTOUCH_CHAN1 = MIDI_STATUS_NOTE_OFF_CHAN1 + 5*MIDI_N_CHANNELS
-MIDI_STATUS_PITCH_BEND_CHAN1 = MIDI_STATUS_NOTE_OFF_CHAN1 + 6*MIDI_N_CHANNELS
-
-### Non channel-linked functionalities
-MIDI_STATUS_SYSEX = 240
-MIDI_STATUS_MIDI_TIME_CODE_QTR_FRAME = 241
-MIDI_STATUS_SONG_POSITION_POINTER = 242
-MIDI_STATUS_SONG_SELECT = 243
-MIDI_STATUS_UNDEFINED_RESERVED = [244, 245, 253]
-MIDI_STATUS_TUNE_REQUEST = 246
-MIDI_STATUS_EOX = 247
-MIDI_STATUS_TIMING_CLOCK = 248
-MIDI_STATUS_START = 250
-MIDI_STATUS_CONTINUE = 251
-MIDI_STATUS_STOP = 252
-MIDI_STATUS_ACTIVE_SENSING = 254
-MIDI_STATUS_SYSTEM_RESET = 255
-### Last MIDI status
-MIDI_STATUS_END = MIDI_STATUS_SYSTEM_RESET
 
 
 def setStatusRange(firstChannelCode):
@@ -60,7 +32,7 @@ def statusToChannel(status):
     """
     
     if isChannelLinked(status):
-        return (status-MIDI_STATUS_NOTE_OFF_CHAN1) % MIDI_N_CHANNELS +1
+        return (status-MIDI_NOTEOFF) % MIDI_N_CHANNELS +1
     else:
         return 0
         
@@ -80,7 +52,7 @@ def changeStatusChannel(status: int, channel: int):
     if channel not in range(1, MIDI_N_CHANNELS+1):
         raise ValueError("utility.midiutils.changeStatusChannel: input channel must be in [[1, ", MIDI_N_CHANNELS, "]]")
     elif isChannelLinked(status):
-        offset = channel-((status-MIDI_STATUS_NOTE_OFF_CHAN1) % MIDI_N_CHANNELS +1)
+        offset = channel-((status-MIDI_NOTEOFF) % MIDI_N_CHANNELS +1)
         return status+offset
     else:
         return status
@@ -99,9 +71,9 @@ def isChannelLinked(status: int):
         ValueError: if input is not a midi status
     """
     
-    if status in range(MIDI_STATUS_NOTE_OFF_CHAN1, MIDI_STATUS_SYSEX):
+    if status in range(MIDI_NOTEOFF, MIDI_BEGINSYSEX):
         return True
-    elif (status < MIDI_STATUS_BEGIN) or (status > MIDI_STATUS_END):
+    elif (status < MIDI_NOTEON) or (status > MIDI_NOTEOFF):
         raise ValueError("utility.midiutils.isChannelLinked: This is not a MIDI status !")
     else:
         Warning("utility.midiUtils.isChannelLinked: Midi Status does not correspond to a channel-linked control")
