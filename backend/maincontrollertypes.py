@@ -10,7 +10,7 @@ from backend.dictionaries  import SYSEX
 """
 
 class Pad(multipleControl):
-    def __init__(self, callback_fn=None, controlMode=ControlModes['CC'][0], dataOut=0, LED_COLOR_DEFAULT = COLORS['RED'], LED_COLOR_BEAT = COLORS['OFF'], LED_COLOR_BAR = COLORS['OFF']):
+    def __init__(self, callback_fn=None, controlMode=ControlModes['CC'][0], dataOut=0, LED_COLOR_DEFAULT = COLORS['RED'], LED_COLOR_BEAT = COLORS['OFF'], LED_COLOR_BAR = COLORS['OFF'], condition = True):
         """A Pad.
 
         Args:
@@ -23,14 +23,15 @@ class Pad(multipleControl):
         """
         super().__init__('PAD', callback_fn, controlMode, dataOut)
         self._initColorMaps()
-        self._setColorMap(LED_COLOR_DEFAULT, LED_COLOR_BEAT, LED_COLOR_BAR)
-        self.SetID()        
+        self._addColorMap(LED_COLOR_DEFAULT, LED_COLOR_BEAT, LED_COLOR_BAR, condition).SetID()        
     
     def _initColorMaps(self):
-        self.colorMaps=[]
+        self.colorMaps=ColorMapList()
         
-    def _setColorMap(self, LED_COLOR_DEFAULT=COLORS['RED'],LED_COLOR_BEAT=COLORS['OFF'],LED_COLOR_BAR=COLORS['OFF'],):
-        self.colorMaps.append([LED_COLOR_DEFAULT, LED_COLOR_BEAT, LED_COLOR_BAR])
+    def _addColorMap(self, LED_COLOR_DEFAULT=COLORS['RED'],LED_COLOR_BEAT=COLORS['OFF'],LED_COLOR_BAR=COLORS['OFF'], condition = True):
+        self.colorMaps._addColorMap(LED_COLOR_DEFAULT, LED_COLOR_BEAT, LED_COLOR_BAR, condition)
+        return self
+    
         
     def SetID(self):
         self.ID_PAD = ID_PADS[self.number]

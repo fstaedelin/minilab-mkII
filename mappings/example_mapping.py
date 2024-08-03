@@ -45,7 +45,8 @@ exampleMapping = MiniLabMapping(
     
     #Then Pads
     [
-        sysexPad(callback_fn=sysex_start, sysexFn='PLAY', LED_COLOR_DEFAULT = COLORS['GREEN'], LED_COLOR_BEAT = COLORS['YELLOW'], LED_COLOR_BAR = COLORS['GREEN']),
+        sysexPad(callback_fn=sysex_start, sysexFn='PLAY', LED_COLOR_DEFAULT = COLORS['GREEN'], LED_COLOR_BEAT = COLORS['YELLOW'], LED_COLOR_BAR = COLORS['OFF'])
+        ._addColorMap(COLORS['GREEN'], COLORS['YELLOW'], COLORS['RED']),
         sysexPad(sysex_stop, sysexFn='STOP', LED_COLOR_DEFAULT=COLORS['RED']),
         # Record drums
         Pad(normal_dummy, ControlModes['CC'], dataout = 22, LED_COLOR_DEFAULT=COLORS['BLUE']),

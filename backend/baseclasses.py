@@ -5,7 +5,8 @@
 """
 
 from utility.midiutils import changeStatusChannel, statusToChannel
-from backend.dictionaries import ControlModes
+from backend.dictionaries import ControlModes, COLORS
+
 
 class Control:
     """
@@ -65,3 +66,24 @@ class multipleControl(Control):
     
     def setDefaultName(self):
         self._setName(self.name+str(self.number))
+        
+class ColorMapList:
+    def __init__(self):
+        self._colorMaps=[]
+        self._isActive=[]
+        self._conditions=[]
+        
+    def _addColorMap(self, LED_COLOR_DEFAULT=COLORS['RED'], LED_COLOR_BEAT=COLORS['OFF'], LED_COLOR_BAR=COLORS['OFF'], condition=True):
+        self._colorMaps.append([LED_COLOR_DEFAULT, LED_COLOR_BEAT, LED_COLOR_BAR])
+        self._isActive.append(False)
+        self._conditions.append(condition)
+        self._updateActivity()
+        
+    def _updateActivity(self):
+        i=0
+        for cond in self._conditions:
+            if cond:
+                self._isActive[i] = True 
+            else:
+                self._isActive[i] = False
+            i+=1
