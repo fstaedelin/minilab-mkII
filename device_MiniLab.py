@@ -10,6 +10,8 @@
 """
 
 import midi
+import utils
+
 import ui
 import sys
 import mixer
@@ -20,8 +22,8 @@ import patterns
 import device
 
 
-from MiniLabProcess import MiniLabMidiProcessor
-from MiniLabControllerConfig import MidiControllerConfig
+from MiniLabProcess import MidiProcessor
+from MiniLabControllerConfig import ControllerConfig
 
 #import mapping
 from utility.toolbox import checkHandled
@@ -35,8 +37,8 @@ from mappings.example_mapping import exampleMapping
 #-----------------------------------------------------------------------------------------
 
 
-_mk2 = MidiControllerConfig(exampleMapping)
-_processor = MiniLabMidiProcessor(_mk2)
+_mk2 = ControllerConfig(exampleMapping)
+_processor = MidiProcessor(_mk2)
 
 
 #----------STOCK FL EVENT HANDLER FUNCTIONS ------------------------------------------------------------------------------
@@ -55,8 +57,6 @@ def OnMidiIn(event) :
         _processor.ProcessSysExEvent(event)
         checkHandled(event)
     
-    
-        
 
 def OnSysEx(event) :
     print('############## Enter OnSYSEX #############')
@@ -66,7 +66,9 @@ def OnSysEx(event) :
     
 # Function called for each event not dealt with by onMidiIn
 def OnMidiMsg(event) :
-    
+    # To test
+    device.processMIDICC(event)
+    device.directFeedback(event)
     print('############## Enter OnMidiMsg #############')
     # Ignore Notes On, Off, (maybe Pitch bends ?) to not transmit them to OnMidiMsg
     if filterNotes(event):

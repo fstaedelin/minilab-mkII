@@ -5,7 +5,7 @@
 # filter function returns true, then the event is sent to the dispatcher function.
 
 from backend.dictionaries import ControlModes
-from backend.MiniLabMk2Mapping import MiniLabMk2Mapping
+from backend.MiniLabMk2Mapping import MiniLabMapping
 
 class MidiEventDispatcher:
 
@@ -40,7 +40,7 @@ class MidiEventDispatcher:
             self.NewHandler(k, callback_fn, filter_fn=filter_fn)
         return self
     
-    def NewCCHandlersFromMapping(self, mapping: MiniLabMk2Mapping):
+    def NewCCHandlersFromMapping(self, mapping: MiniLabMapping):
         # Same function but linking pads
         for controller in mapping.knobs + mapping.pads + [mapping.mod_wheel] :
             if controller.controlMode in ControlModes['CC']:
@@ -48,7 +48,7 @@ class MidiEventDispatcher:
                 self.NewHandler(controller.control_data, controller.callback_fn)
         return self
     
-    def NewSYSEXHandlersFromMapping(self, mapping:MiniLabMk2Mapping):
+    def NewSYSEXHandlersFromMapping(self, mapping:MiniLabMapping):
         for controller in mapping.pads:
             if controller.controlMode == ControlModes['SYSEX']:
                 print('Creating SYSEX handle for :', controller.name)
