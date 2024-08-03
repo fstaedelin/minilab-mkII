@@ -15,15 +15,10 @@ WidChannelRack = 1
 WidPlaylist = 2
 WidBrowser = 4
 WidPlugin = 5
-from backend.MiniLabMk2Mapping import MiniLabMk2Mapping
+from backend.MiniLabMk2Mapping import MiniLabMapping
 
 class MiniLabLightReturn:
-# 0x02 :write param
-# 0x00 :standard break
-# 0x10 : Set Color
-# 0x7C : Pad ID
-# 0x05 : color
-    def __init__(self, mapping: MiniLabMk2Mapping):
+    def __init__(self, mapping: MiniLabMapping):
         self.padIDs = []
         self.fixedpadcolors = []
         self.blinkableIDs = []
@@ -62,7 +57,7 @@ class MiniLabLightReturn:
         if transport.isPlaying():
                 i=0
                 for blinkingpad in self.blinkableIDs:
-                    if value == 0:
+                    if value > 0:
                         SetPadColor(blinkingpad, self.blinkingcolor2[i])
                     else:
                         SetPadColor(blinkingpad, COLORS['OFF'])

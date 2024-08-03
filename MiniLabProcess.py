@@ -19,8 +19,8 @@ from utility.toolbox import checkHandled, printCommandChannel
 
 from backend.dictionaries import SYSEX, ControlModes
 
-from backend.MiniLabMk2Mapping import MiniLabMk2Mapping
-from MiniLabControllerConfig import MidiControllerConfig
+from backend.MiniLabMk2Mapping import MiniLabMapping
+from MiniLabControllerConfig import ControllerConfig
 
 #import ArturiaVCOL
 
@@ -29,12 +29,12 @@ from MiniLabControllerConfig import MidiControllerConfig
 # The class creates new handler for each function
 # The class calls the right fonction depending on the incoming CC
 
-class MiniLabMidiProcessor:
+class MidiProcessor:
     @staticmethod
     def _is_pressed(event):
         return event.controlVal != 0
 
-    def __init__(self, controller: MidiControllerConfig):
+    def __init__(self, controller: ControllerConfig):
         def by_data1(event) : return event.data1
         def by_data2(event) : return event.data2
         def by_status(event) : return event.status

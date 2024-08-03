@@ -2,9 +2,6 @@
 # This corresponds to event.status in midiEvents
 
 from midi import *
-# Max supported MIDI channels ?
-MIDI_N_CHANNELS=16
-
 
 def setStatusRange(firstChannelCode):
     """Utility to define range containing all MIDI stati for a channel-linked functionality
@@ -16,7 +13,7 @@ def setStatusRange(firstChannelCode):
         range: if status is channel-linked, returns the full range of midi stati that correspond to the functionality, else: returns a range containing the single input
     """
     if isChannelLinked(firstChannelCode):
-        return range(firstChannelCode, firstChannelCode+MIDI_N_CHANNELS)
+        return range(firstChannelCode, firstChannelCode+REC_TrackRange)
     else:
         return range(firstChannelCode,firstChannelCode+1)
 
@@ -32,7 +29,7 @@ def statusToChannel(status):
     """
     
     if isChannelLinked(status):
-        return (status-MIDI_NOTEOFF) % MIDI_N_CHANNELS +1
+        return (status-MIDI_NOTEOFF) % REC_TrackRange +1
     else:
         return 0
         
@@ -49,10 +46,10 @@ def changeStatusChannel(status: int, channel: int):
         ValueError: if channel is not in 1, 16
     """
     
-    if channel not in range(1, MIDI_N_CHANNELS+1):
-        raise ValueError("utility.midiutils.changeStatusChannel: input channel must be in [[1, ", MIDI_N_CHANNELS, "]]")
+    if channel not in range(1, REC_TrackRange+1):
+        raise ValueError("utility.midiutils.changeStatusChannel: input channel must be in [[1, ", REC_TrackRange, "]]")
     elif isChannelLinked(status):
-        offset = channel-((status-MIDI_NOTEOFF) % MIDI_N_CHANNELS +1)
+        offset = channel-((status-MIDI_NOTEOFF) % REC_TrackRange +1)
         return status+offset
     else:
         return status

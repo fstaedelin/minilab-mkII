@@ -8,13 +8,13 @@ from backend.dictionaries import SYSEX
 from backend.dictionaries import ControlModes
 from utility.flcommands import *
 
-from backend.maincontrollertypes import Pad, sysexPad, Knob
-from backend.MiniLabMk2Mapping import MiniLabMk2Mapping
+from backend.maincontrollertypes import Pad, sysexPad, emptyPad, Knob
+from backend.MiniLabMk2Mapping import MiniLabMapping
 
 # Define the channels set in MIDI Control Center. You should put all buttons of the same mode in the same channel, which shouldn't be the keyboard one
 CONTROL_CHANNEL = 2 # Shouldn't be 1
 
-exampleMapping = MiniLabMk2Mapping(
+exampleMapping = MiniLabMapping(
     CONTROL_CHANNEL,
     # Knob mapping first
     [
@@ -45,23 +45,35 @@ exampleMapping = MiniLabMk2Mapping(
     
     #Then Pads
     [
-        sysexPad(callback_fn=sysex_start, sysexFn='PLAY', LED_COLOR=COLORS['GREEN'], LED_BLINKONPLAY=True, LED_BLINKCOLOR=COLORS['YELLOW']),
-        sysexPad(sysex_stop, 'STOP', COLORS['RED'], False),
-        sysexPad(sysex_rewind, 'REWIND', COLORS['CYAN'], False),
-        sysexPad(sysex_fastforward ,'FAST_FORWARD', COLORS['CYAN'], False),
-        Pad(None, 0, 0, COLORS['OFF'], False),
-        Pad(None, 0, 0, COLORS['OFF'], False),
-        Pad(None, 0, 0, COLORS['OFF'], False),
-        sysexPad(sysex_rec_strobe ,'REC_STROBE', COLORS['RED'], False),
+        sysexPad(callback_fn=sysex_start, sysexFn='PLAY', LED_COLOR_DEFAULT = COLORS['GREEN'], LED_COLOR_BEAT = COLORS['YELLOW'], LED_COLOR_BAR = COLORS['GREEN']),
+        sysexPad(sysex_stop, sysexFn='STOP', LED_COLOR_DEFAULT=COLORS['RED']),
+        # Record drums
+        Pad(normal_dummy, ControlModes['CC'], dataout = 22, LED_COLOR_DEFAULT=COLORS['BLUE']),
+        # Record bass
+        Pad(normal_dummy, ControlModes['CC'], dataout = 23, LED_COLOR_DEFAULT=COLORS['BLUE']),
+        # Record Synth1
+        Pad(normal_dummy, ControlModes['CC'], dataout = 24, LED_COLOR_DEFAULT=COLORS['BLUE']),
+        # Record Synth2
+        Pad(normal_dummy, ControlModes['CC'], dataout = 25, LED_COLOR_DEFAULT=COLORS['BLUE']),
+        # Record Sax
+        Pad(normal_dummy, ControlModes['CC'], dataout = 26, LED_COLOR_DEFAULT=COLORS['BLUE']),
+        # Record Vocals
+        Pad(normal_dummy, ControlModes['CC'], dataout = 27, LED_COLOR_DEFAULT=COLORS['BLUE']),
         
-        Pad(normal_dummy, ControlModes['CC'], 0, COLORS['BLUE'], False),
-        Pad(normal_dummy, ControlModes['CC'], 0, COLORS['BLUE'], False),
-        Pad(normal_dummy, ControlModes['CC'], 0, COLORS['BLUE'], False),
-        Pad(normal_dummy, ControlModes['CC'], 0, COLORS['BLUE'], False),
-        Pad(normal_dummy, ControlModes['CC'], 0, COLORS['BLUE'], False),
-        Pad(normal_dummy, ControlModes['CC'], 0, COLORS['BLUE'], False),
-        Pad(normal_dummy, ControlModes['CC'], 0, COLORS['BLUE'], False),
-        Pad(normal_dummy, ControlModes['CC'], 0, COLORS['BLUE'], False),
+        sysexPad(sysex_fastforward ,'FAST_FORWARD', COLORS['CYAN']),
+        emptyPad(),
+        emptyPad(),
+        emptyPad(),
+        sysexPad(sysex_rec_strobe ,'REC_STROBE', COLORS['RED'], COLORS['OFF']),
+        
+        Pad(normal_dummy, ControlModes['CC'], LED_COLOR_DEFAULT=COLORS['BLUE']),
+        Pad(normal_dummy, ControlModes['CC'], LED_COLOR_DEFAULT=COLORS['BLUE']),
+        Pad(normal_dummy, ControlModes['CC'], LED_COLOR_DEFAULT=COLORS['BLUE']),
+        Pad(normal_dummy, ControlModes['CC'], LED_COLOR_DEFAULT=COLORS['BLUE']),
+        Pad(normal_dummy, ControlModes['CC'], LED_COLOR_DEFAULT=COLORS['BLUE']),
+        Pad(normal_dummy, ControlModes['CC'], LED_COLOR_DEFAULT=COLORS['BLUE']),
+        Pad(normal_dummy, ControlModes['CC'], LED_COLOR_DEFAULT=COLORS['BLUE']),
+        Pad(normal_dummy, ControlModes['CC'], LED_COLOR_DEFAULT=COLORS['BLUE']),
     ]
 )
          

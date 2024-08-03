@@ -3,10 +3,10 @@
 """
 
 from backend.maincontrollertypes import *
-from utility.midiutils import MIDI_N_CHANNELS
+from midi import REC_TrackRange
 from utility.toolbox import checkHandled
 
-class MiniLabMk2Mapping:
+class MiniLabMapping:
     
     NUMBER_OF_PADS = 16
     NUMBER_OF_KNOBS = 20 # Incudes shift+knobs 1/9 and press knobs 1/9
@@ -70,7 +70,7 @@ class MiniLabMk2Mapping:
         if i < self.NUMBER_OF_KNOBS:
             print(self.NUMBER_OF_KNOBS-i, " unmapped knobs !")
         
-        if control_chn in range(1, MIDI_N_CHANNELS+1):
+        if control_chn in range(1, REC_TrackRange+1):
             self._setControlChannel(control_chn) 
             self._updateControlChannels()           
         else:

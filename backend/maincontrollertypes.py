@@ -10,7 +10,7 @@ from backend.dictionaries  import SYSEX
 """
 
 class Pad(multipleControl):
-    def __init__(self, callback_fn=None, controlMode=ControlModes['CC'][0], dataOut=0, LED_COLOR = COLORS['RED'], LED_BLINKONPLAY = False, LED_BLINKCOLOR = COLORS['OFF']):
+    def __init__(self, callback_fn=None, controlMode=ControlModes['CC'][0], dataOut=0, LED_COLOR_DEFAULT = COLORS['RED'], LED_COLOR_BEAT = COLORS['OFF'], LED_COLOR_BAR = COLORS['OFF']):
         """A Pad.
 
         Args:
@@ -18,20 +18,29 @@ class Pad(multipleControl):
             controlMode (int, optional): First MIDI argument of sent message. Use utility.dictionnaries.ControlModes to map them easily. Defaults to ControlModes['CC'][1].
             dataOut (int, optional): Second MIDI argument of sent message. Usually between 0 and 127. Defaults to 0.
             LED_COLOR (int, optional): The Pad color. Use utility.dictionaries.COLORS to set it up. Defaults to COLORS['RED'].
-            LED_BLINKONPLAY (bool, optional): Does the pad blink when FL is playing ?. Defaults to False.
+            PLAY (bool, optional): Does the pad blink when FL is playing ?. Defaults to False.
             LED_BLINKCOLOR (int, optional): If it blinks, what color ? Use utility.dictionaries.COLORS to set it up. Defaults to COLORS['OFF'].
         """
         super().__init__('PAD', callback_fn, controlMode, dataOut)
-        self.LED_COLOR = LED_COLOR
-        self.LED_BLINKONPLAY = LED_BLINKONPLAY
-        self.LED_BLINKCOLOR = LED_BLINKCOLOR
+        self._initColorMaps()
+        self._setColorMap(LED_COLOR_DEFAULT, LED_COLOR_BEAT, LED_COLOR_BAR)
         self.SetID()        
     
+    def _initColorMaps(self):
+        self.colorMaps=[]
+        
+    def _setColorMap(self, LED_COLOR_DEFAULT=COLORS['RED'],LED_COLOR_BEAT=COLORS['OFF'],LED_COLOR_BAR=COLORS['OFF'],):
+        self.colorMaps.append([LED_COLOR_DEFAULT, LED_COLOR_BEAT, LED_COLOR_BAR])
+        
     def SetID(self):
         self.ID_PAD = ID_PADS[self.number]
 
+class emptyPad(Pad):
+    def __init__():
+        super.init(LED_COLOR_DEFAULT = COLORS['OFF'])
+
 class sysexPad(Pad):         
-    def __init__(self, callback_fn=None, sysexFn='PLAY', LED_COLOR = COLORS['RED'], LED_BLINKONPLAY = False, LED_BLINKCOLOR = COLORS['OFF']):
+    def __init__(self, callback_fn=None, sysexFn='PLAY', LED_COLOR_DEFAULT = COLORS['RED'], LED_COLOR_BEAT = COLORS['OFF'], LED_COLOR_BAR = COLORS['OFF']):
         """A SYSEX Pad.
 
         Args:
@@ -40,7 +49,7 @@ class sysexPad(Pad):
             LED_BLINKONPLAY (bool, optional): Does the pad blink when FL is playing ?. Defaults to False.
             LED_BLINKCOLOR (int, optional): If it blinks, what color ? Use utility.dictionaries.COLORS to set it up. Defaults to COLORS['OFF'].
         """
-        super().__init__(callback_fn=callback_fn, controlMode = ControlModes['SYSEX'], dataOut=SYSEX[sysexFn], LED_COLOR = LED_COLOR, LED_BLINKONPLAY=LED_BLINKONPLAY, LED_BLINKCOLOR=LED_BLINKCOLOR)
+        super().__init__(callback_fn=callback_fn, controlMode = ControlModes['SYSEX'], dataOut=SYSEX[sysexFn], LED_COLOR_DEFAULT = LED_COLOR_DEFAULT, LED_COLOR_BEAT = LED_COLOR_BEAT, LED_COLOR_BAR = LED_COLOR_BAR)
 
 
 class Knob(multipleControl):
