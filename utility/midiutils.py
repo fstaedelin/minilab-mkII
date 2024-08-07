@@ -2,6 +2,9 @@
 # This corresponds to event.status in midiEvents
 
 from midi import *
+from utility.toolbox import MIDIWarning
+
+MIDI_N_CHANNELS = 16
 
 def setStatusRange(firstChannelCode):
     """Utility to define range containing all MIDI stati for a channel-linked functionality
@@ -13,7 +16,7 @@ def setStatusRange(firstChannelCode):
         range: if status is channel-linked, returns the full range of midi stati that correspond to the functionality, else: returns a range containing the single input
     """
     if isChannelLinked(firstChannelCode):
-        return range(firstChannelCode, firstChannelCode+REC_TrackRange)
+        return range(firstChannelCode, firstChannelCode+MIDI_N_CHANNELS)
     else:
         return range(firstChannelCode,firstChannelCode+1)
 
@@ -29,9 +32,9 @@ def statusToChannel(status):
     """
     
     if isChannelLinked(status):
-        return (status-MIDI_NOTEOFF) % REC_TrackRange +1
+        return (status-MIDI_NOTEOFF) % MIDI_N_CHANNELS +1
     else:
-        return 0
+        return status
         
 def changeStatusChannel(status: int, channel: int):
     """Utility to change a MIDI status to another channel:
@@ -46,10 +49,10 @@ def changeStatusChannel(status: int, channel: int):
         ValueError: if channel is not in 1, 16
     """
     
-    if channel not in range(1, REC_TrackRange+1):
-        raise ValueError("utility.midiutils.changeStatusChannel: input channel must be in [[1, ", REC_TrackRange, "]]")
+    if channel not in range(1, MIDI_N_CHANNELS+1):
+        raise ValueError("utility.midiutils.changeStatusChannel: input channel must be in [[1, ", MIDI_N_CHANNELS, "]]")
     elif isChannelLinked(status):
-        offset = channel-((status-MIDI_NOTEOFF) % REC_TrackRange +1)
+        offset = channel-((status-MIDI_NOTEOFF) % MIDI_N_CHANNELS +1)
         return status+offset
     else:
         return status
@@ -70,8 +73,8 @@ def isChannelLinked(status: int):
     
     if status in range(MIDI_NOTEOFF, MIDI_BEGINSYSEX):
         return True
-    elif (status < MIDI_NOTEON) or (status > MIDI_NOTEOFF):
+    elif (status < MIDI_NOTEOFF) or (status > MIDI_SYSTEMRESET):
         raise ValueError("utility.midiutils.isChannelLinked: This is not a MIDI status !")
     else:
-        Warning("utility.midiUtils.isChannelLinked: Midi Status does not correspond to a channel-linked control")
+        MIDIWarning("utility.midiUtils.isChannelLinked: Midi Status does not correspond to a channel-linked control")
         return False

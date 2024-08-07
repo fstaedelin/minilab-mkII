@@ -60,25 +60,70 @@ def normal_dummy(event):
     print('Normal dummy')
 # Record
 def bassRecord(self, event):
-    mixer.armTrack(template.bass_trk)
+    #mixer.armTrack(template.bass_trk)
+    print('TODO')
 
 def saxRecord(self, event):
-    print("hey")
-    mixer.armTrack(template.sax_trk)
-
+    #mixer.armTrack(template.sax_trk)
+    print('TODO')
+    
 def vocalRecord(self, event):
-    mixer.armTrack(template.vocals_trk)
+    #mixer.armTrack(template.vocals_trk)
+    print('TODO')
 
 def in4Record(self, event):
-    mixer.armTrack(template.in_4_trk)
+    #mixer.armTrack(template.in_4_trk)
+    print('TODO')
 
 def in5Record(self, event):
-    mixer.armTrack(template.in_5_trk)
+    #mixer.armTrack(template.in_5_trk)
+    print('TODO')
+    
+def MidKeysRecord(self, event):
+    #mixer.armTrack(template.in_5_trk)
+    print('TODO')
+    
+def HiKeysRecord(self, event):
+    #mixer.armTrack(template.in_5_trk)
+    print('TODO')
 
 def FPCRecord(self, event):
     channels.selectChannel(0, 1)
     transport.record()
 
+# ToggleMute
+def bassToggleMute(self, event):
+    #mixer.armTrack(template.bass_trk)
+    print('TODO')
+
+def saxToggleMute(self, event):
+    #mixer.armTrack(template.sax_trk)
+    print('TODO')
+    
+def vocalToggleMute(self, event):
+    #mixer.armTrack(template.vocals_trk)
+    print('TODO')
+
+def in4ToggleMute(self, event):
+    #mixer.armTrack(template.in_4_trk)
+    print('TODO')
+
+def in5ToggleMute(self, event):
+    #mixer.armTrack(template.in_5_trk)
+    print('TODO')
+    
+def MidKeysToggleMute(self, event):
+    #mixer.armTrack(template.in_5_trk)
+    print('TODO')
+    
+def HiKeysToggleMute(self, event):
+    #mixer.armTrack(template.in_5_trk)
+    print('TODO')
+
+def FPCToggleMute(self, event):
+    channels.selectChannel(0, 1)
+    transport.record()
+    
 # NAVIGATE
 
 def loopThroughChannels(self, event):

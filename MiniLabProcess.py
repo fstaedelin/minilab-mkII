@@ -15,12 +15,11 @@ import general
 from MiniLabDispatch import MidiEventDispatcher
 
 from utility.flcommands import *
-from utility.toolbox import checkHandled, printCommandChannel
+from utility.toolbox import printCommandChannel, Tagable, Debug, ProcessorWarning
 
 from backend.dictionaries import SYSEX, ControlModes
 
 from backend.MiniLabMk2Mapping import MiniLabMapping
-from MiniLabControllerConfig import ControllerConfig
 
 #import ArturiaVCOL
 
@@ -34,7 +33,7 @@ class MidiProcessor:
     def _is_pressed(event):
         return event.controlVal != 0
 
-    def __init__(self, controller: ControllerConfig):
+    def __init__(self, map: MiniLabMapping):
         def by_data1(event) : return event.data1
         def by_data2(event) : return event.data2
         def by_status(event) : return event.status
@@ -42,7 +41,6 @@ class MidiProcessor:
         def ignore_release(event): return self._is_pressed(event)
         def ignore_press(event): return not self._is_pressed(event)
 
-        self._controller = controller
         #self.mapping.mod_wheel._setFn(self.ProcessModWheelEvent)
         self.natively_handled = [ControlModes['NOTE_OFF']]+[ControlModes['NOTE_ON']]+[ControlModes['PAD_AFTERTOUCH']]
         
@@ -50,7 +48,7 @@ class MidiProcessor:
         ## SysEx dispatcher
         self._sysex_dispatcher = (
             MidiEventDispatcher(by_sysex)
-            .NewSYSEXHandlersFromMapping(self._controller._mapping)
+            .NewSYSEXHandlersFromMapping(map)
         )
         
         ## Control change dispatcher. Supports:
@@ -58,7 +56,7 @@ class MidiProcessor:
         self._CC_dispatcher = (
             MidiEventDispatcher(by_data1)
             ## handles knobs, pads and the modulation wheel
-            .NewCCHandlersFromMapping(self._controller._mapping)
+            .NewCCHandlersFromMapping(map)
         )
         
         ## Master dispatcher
@@ -71,7 +69,7 @@ class MidiProcessor:
             # No need to redirect those because they are caught before
             #.NewHandler(MIDI_STATUS_SYSEX, self.ProcessSysExEvent)
             # Pitch bends can be assigned to processPitchBend at once
-            .NewHandler(self._controller._mapping.pitch_bend.controlMode, self._controller._mapping.ProcessPitchBendEvent)
+            .NewHandler(map.pitch_bend.controlMode, map.ProcessPitchBendEvent)
             .NewHandlerForKeys(ControlModes['CC'], self.ProcessCommandEvent)
         )
 
@@ -79,26 +77,32 @@ class MidiProcessor:
     # PROCESSORS
     # Master processor
     def ProcessEvent(self, event) :
-        print('#######  ... Processing ... #######')
+        processDebug = Debug(title = 'Processing')
         if event.status not in self.natively_handled:
+            Debug("Event not natively handled, Dispatching by status", callback_fn= Tagable.printEvent(event))
             return self._status_dispatcher.Dispatch(event)
         else:
+            Debug("Natively handled", callback_fn=Tagable.printEvent(event))
             return False
+        processDebug._close()
+        
     
     # Sysex processor
     def ProcessSysExEvent(self, event):
         if not event.sysex == None:
-            print('####### Processing SysExEvent #######')
-            print('event status: ', event.status)
-            print('event sysex: ', event.sysex)
+            Debug('Processing SysExEvent',
+                ['event status: '+str(event.status),
+                'event sysex: '+str(event.sysex),
+                ])
             event.handled = self._sysex_dispatcher.Dispatch(event)
         return event.handled
 
     def ProcessCommandEvent(self, event):
-        print('####### Processing CommandEvent #######')
-        event.handled = self._CC_dispatcher.Dispatch(event)
+        __PROCESSCOMMAND = Debug(title = "ProcessCommandEvent", key = self._CC_dispatcher.Dispatch(event))
         if event.handled == False:
-            print('/!\/!\/!\/!\/!\ CC not set ! /!\/!\/!\/!\/!')
+            ProcessorWarning('CC not set !')
             printCommandChannel(event)
         return event.handled
+    
+
     

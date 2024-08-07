@@ -20,25 +20,22 @@ import channels
 import playlist
 import patterns
 import device
-
+import gc
 
 from MiniLabProcess import MidiProcessor
 from MiniLabControllerConfig import ControllerConfig
 
 #import mapping
-from utility.toolbox import checkHandled
-from utility.toolbox import filterNotes
-from utility.toolbox import filterAftertouch
+from utility.toolbox import filterNotes, filterAftertouch
+from utility.logger import Logger
 from backend.dictionaries import ControlModes
-
 from mappings.example_mapping import exampleMapping
 #import ArturiaVCOL
 
 #-----------------------------------------------------------------------------------------
-
-
+_JARVIS = Logger()
 _mk2 = ControllerConfig(exampleMapping)
-_processor = MidiProcessor(_mk2)
+_processor = MidiProcessor(exampleMapping)
 
 
 #----------STOCK FL EVENT HANDLER FUNCTIONS ------------------------------------------------------------------------------
@@ -51,59 +48,60 @@ _processor = MidiProcessor(_mk2)
 
 # Function called for each event
 def OnMidiIn(event) :
-    print("############## Event Received #############")
+    __MIDIIN = Debug("OnMidiIn")
     # If you want to process SYSEX events before FL studio does, you need to do that here.
     if event.status == ControlModes['SYSEX']:
         _processor.ProcessSysExEvent(event)
-        checkHandled(event)
+    __MIDIIN.close()
     
 
 def OnSysEx(event) :
-    print('############## Enter OnSYSEX #############')
+    __ONSYSEX = DeviceWarning('OnSysEx')
     #_processor.ProcessSysExEvent(event)
-    checkHandled(event)
+    __ONSYSEX.close()
         
     
 # Function called for each event not dealt with by onMidiIn
 def OnMidiMsg(event) :
     # To test
-    device.processMIDICC(event)
-    device.directFeedback(event)
-    print('############## Enter OnMidiMsg #############')
+    __ONMIDIMSG = DeviceWarning(title = "OnMidiMsg")
+    #device.processMIDICC(event)
+    #device.directFeedback(event)    
     # Ignore Notes On, Off, (maybe Pitch bends ?) to not transmit them to OnMidiMsg
     if filterNotes(event):
-        print("############## Notes filtered #############")
+        Debug("Notes filtered")
     elif filterAftertouch(event):
-        print("############## Pad aftertouch suppressed #############")
-    elif not _processor.ProcessEvent(event):
-        print('!\/!\/!\/!\/!\ EVENT NOT PROCESSED /!\/!\/!\/!\/!')
-            
-    #checkHandled(event)
+        Debug("Pad aftertouch suppressed")
+    else:
+        _processor.ProcessEvent(event)
+    __ONMIDIMSG.close()
+        
+    
 
 def OnPitchBend(event) :
-    print('############## Enter OnPitchBend #############')
-    checkHandled(event)
+    Debug('Enter OnPitchBend')
+    
 
 def OnKeyPressure(event):
-    print('############## Enter OnKeyPressure #############')
-    checkHandled(event)
+    __ONKEYPRESSURE = DeviceWarning('Enter OnKeyPressure')
+    __ONKEYPRESSURE.close()
 
 def OnChannelPressure(event):
-    print('############## Enter OnChannelPressure #############')
-    checkHandled(event)
+   __ONCHANNELPRESSURE = DeviceWarning('Enter OnChannelPressure')
+   __ONCHANNELPRESSURE.close()
 
 def OnControlChange(event):
-    print('############## Enter OnControlChange #############')
-    checkHandled(event)
+    __ONCONTROLCHANGE = DeviceWarning('Enter OnControlChange')
+    __ONCONTROLCHANGE.close()
     
 def OnProgramChange(event):
-    print('############## Enter OnProgramChange #############')
-    checkHandled(event)
+    __ONPROGRAMCHANGE = DeviceWarning('Enter OnProgramChange')
+    __ONPROGRAMCHANGE.close()
 
 #----------STOCK FL EVENT RETURN FUNCTIONS ------------------------------------------------------------------------------
 # Function called when Play/Pause button is ON
-def OnUpdateBeatIndicator(value):
-    _mk2.ProcessBlink(value)
+#def OnUpdateBeatIndicator(value):
+    #_mk2.ProcessBlink(value)
 
 #----------REACTIONS TO FL EVENTS FUNCTIONS ------------------------------------------------------------------------------
 
@@ -113,13 +111,13 @@ def OnInit():
     _mk2.InitSync()
     
 def OnProjectLoad(status):
-    print('############## Enter OnProjectLoad #############')
+    Debug('Enter OnProjectLoad')
 
 def OnRefresh(flags):
-    print('############## Enter OnRefresh #############')
+    Debug('Enter OnRefresh')
     _mk2.Sync()
 
 # Handles the script when FL Studio closes
 def OnDeInit():
-    print('############## Enter OnDeInit #############')
+    Debug('Enter OnDeInit')
     return

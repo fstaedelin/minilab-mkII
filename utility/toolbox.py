@@ -1,20 +1,14 @@
 from backend.dictionaries import *
+def function_dummy():
+    print('Dummy function')
 
-def checkHandled(event):
-    if event.handled == False:
-        print('/!\/!\/!\/!\ Event not handled /!\/!\/!\/!')
-        print('event status: ', event.status)
-        print('event data1: ', event.data1)
-        print('event data2: ', event.data2)
-        print('event sysex: ', event.sysex)
-        print('/!\/!\/!\/!\/!\/!\/!\/!')
-            
 def printCommandChannel(event):
-    stat = event.status
-    if stat in ControlModes['CC']:
-        print('Control Changed on Channel ', stat-ControlModes['CC'][0]+1)
+    id = event.midiId
+    if id in ControlModes['CC']:
+        print('Control Changed on Channel ', id-ControlModes['CC'][0]+1)
         print('Control number:', event.data1)
         print('Value:', event.data2)
+        print('Port:', event.port)
     else:
         print('This is not a Control Change !')
         print('event status: ', event.status)
@@ -37,4 +31,11 @@ def filterPitchBends(event):
     return event.handled
 
 def printHandled():
-    print("############## Event Handled #############")
+    print('############## Event Handled #############')
+
+def printEvent(event):
+        print('event midiId: ' + str(event.midiId))
+        print('event status: ' + str(event.status))
+        print('event data1: ' + str(event.data1))
+        print('event data2: ' + str(event.data2))
+        print('event sysex: ' + str(event.sysex))

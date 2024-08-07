@@ -3,25 +3,24 @@
 """
 
 from backend.maincontrollertypes import *
-from midi import REC_TrackRange
-from utility.toolbox import checkHandled
+from utility.midiutils import MIDI_N_CHANNELS
+from utility.toolbox import MappingWarning
 
 class MiniLabMapping:
     
     NUMBER_OF_PADS = 16
-    NUMBER_OF_KNOBS = 20 # Incudes shift+knobs 1/9 and press knobs 1/9
+    NUMBER_OF_KNOBS = 16 # Incudes shift+knobs 1/9 and press knobs 1/9
+    
+    INDEX_PRESSSHIFT_KNOBS = [1, 9]
+    NUMBER_OF_PRESSABLE_KNOBS = len(INDEX_PRESSSHIFT_KNOBS)
+    NUMBER_OF_SHIFTABLE_KNOBS = len(INDEX_PRESSSHIFT_KNOBS)
     
     ## The same for all mappings, shouldn't be changed
-    # carries keyboard info + mod wheel + pitch bend
-    
-    
+    KEYBOARD_CHANNEL = 1
     
     # This one is variable, each mapping should have its own ?
-    control_channel = 2
-    knobs = []
-    pads = []
             
-    def __init__(self, control_chn, knobList: "list[Knob]", padList: "list[Pad]"):
+    def __init__(self, control_chn, knobList: "list[Knob]", shiftKnobList: "list[KnobShift]", pressKnobList: "list[KnobPress]", padList: "list[Pad]"):
         """A mapping of controls corresponding to MiniLab mkII
 
         Args:
@@ -31,69 +30,38 @@ class MiniLabMapping:
         Raises:
             ValueError: If the channel is not in [[ 1, 16  ]]
         """
-        self.keyboard_channel = 1
-        self.mod_wheel = ModWheel(self.ProcessModWheelEvent, self.keyboard_channel)
-        self.pitch_bend = PitchBend(self.ProcessPitchBendEvent, self.keyboard_channel)
-        i=0
         
-        # Sets up the pad numbers, IDs and names
-        for pad in padList:
-            i+=1
-            pad.setNumber(i)
-            pad.SetID()
-            pad.setDefaultName()
-            self.pads.append(pad)
-            
-        # checks if there are unmapped pads
-        if i < self.NUMBER_OF_PADS:
-            print(self.NUMBER_OF_PADS-i, " unmapped pads !")
+        ## 1 mapping -> 1 channel
+        self._checkInitParams(control_chn, knobList, shiftKnobList, pressKnobList, padList)
         
-        i=0
-        # Sets up the numbers and names
-        for knob in knobList:
-            i+=1
-            knob.setNumber(i)
-            knob.setDefaultName()
-            if knob.number > self.NUMBER_OF_PADS:
-                if knob.number == 17:
-                    knob._setName('KNOB1+SHIFT')
-                elif knob.number == 19:
-                    knob._setName('KNOB9+SHIFT')
-                elif knob.number ==18:
-                    knob._setName('KNOB1 SWITCH')
-                elif knob.number == 20:
-                    knob._setName('KNOB9 SWITCH')
-            
-            self.knobs.append(knob)
+        self.control_channel = control_chn
         
-        # checks if there are unmapped knobs
-        if i < self.NUMBER_OF_KNOBS:
-            print(self.NUMBER_OF_KNOBS-i, " unmapped knobs !")
+        self.knobs: "list[Knob]" = self._setMultipleControls(knobList)
+        self.shiftKnobs: "list[KnobShift]" = self._setMultipleControls(shiftKnobList, self.INDEX_PRESSSHIFT_KNOBS)
+        self.pressKnobs: "list[KnobPress]" = self._setMultipleControls(pressKnobList, self.INDEX_PRESSSHIFT_KNOBS)
+        self.pads: "list[Pad]" = self._setMultipleControls(padList)
         
-        if control_chn in range(1, REC_TrackRange+1):
-            self._setControlChannel(control_chn) 
-            self._updateControlChannels()           
-        else:
-            ValueError("Channel number must be in [[ 1, 16 ]]")
+        self.mod_wheel = ModWheel(self.ProcessModWheelEvent, MiniLabMapping.KEYBOARD_CHANNEL)
+        self.pitch_bend = PitchBend(self.ProcessPitchBendEvent, MiniLabMapping.KEYBOARD_CHANNEL)
         
-    def _setControlChannel(self, chn):
-        """change the MIDI control channel
-
-        Args:
-            chn (int): new midi channel. Must be in [[ 1, 16 ]]
-        """
-        self.control_channel = chn
+        self._checkIfComplete()
+    
+    def _controls(self):
+        return self.knobs + self.shiftKnobs + self.pressKnobs + self.pads + self.mod_wheel + self.pitch_bend
+    
+    def _multiControls(self):
+        return self.knobs + self.shiftKnobs + self.pressKnobs + self.pads
+    
+    #### Helpers to set up the mapping's multiple controls
+    def _setMultipleControls(self, controlList: "list[MultipleControl]", number_mapping = []):
+        MultipleControl.ISSAMETYPE = False
+        for multiControl in controlList:
+            multiControl._initControl(self.control_channel, number_mapping)
+            MultipleControl.ISSAMETYPE = True
         
-    def _updateControlChannels(self):
-        """Updates all the controls' channels via their commanded MIDI status. Might need to change to include midi notes for pads.
-        """
-        for controller in self.knobs + self.pads :
-            if controller.controlMode in list(ControlModes['CC'])+list(ControlModes['PAD_AFTERTOUCH']):
-                chn = self.control_channel
-                #print(controller.name)
-                #print(chn)
-                controller.changeChannel(chn)
-                
+        return controlList            
+    
+    ##### Define mapping ModWheel similar for all mappings ? #####
     def ProcessModWheelEvent(self, event):
         print('####### Processing ModWheelEvent #######')
         # what to do ?
@@ -107,3 +75,45 @@ class MiniLabMapping:
         event.handled = True
         checkHandled(event)
         return event.handled
+    
+    ##### CHANNEL MANAGEMENT HELPERS #####
+    def _setControlChannel(self, chn):
+        """change the MIDI control channel
+
+        Args:
+            chn (int): new midi channel. Must be in [[ 1, 16 ]]
+        """
+        self.control_channel = chn
+        
+    def _updateControlChannels(self):
+        """Updates all the controls' channels via their commanded MIDI status. Might need to change to include midi notes for pads.
+        """
+        for controller in self._controls :
+            if controller.controlMode in list(ControlModes['CC'])+list(ControlModes['PAD_AFTERTOUCH']):
+                chn = self.control_channel
+                #print(controller.name)
+                #print(chn)
+                controller.changeChannel(chn)
+                
+    ##### INIT HELPERS ########
+    def _checkInitParams(self, control_chn, knobList: "list[Knob]", shiftKnobList: "list[KnobShift]", pressKnobList: "list[KnobPress]", padList: "list[Pad]"):
+        if control_chn not in range(1, MIDI_N_CHANNELS+1):
+            raise ValueError("Channel number must be in [[ 1, 16 ]]")
+        elif control_chn == self.KEYBOARD_CHANNEL:
+            MappingWarning("Control channel set to keyboard channel")
+        
+        if len(knobList) > MiniLabMapping.NUMBER_OF_KNOBS:
+            ValueError("Too many Knobs for Arturia MiniLab mkII !")
+        
+                
+    def _checkIfComplete(self):
+        # checks if there are unmapped pads
+        if len(self.knobs) < self.NUMBER_OF_KNOBS:
+             MappingWarning(self.NUMBER_OF_PADS-len(self.knobs), " unmapped knobs !")
+        if len(self.pads) < self.NUMBER_OF_PADS:
+             MappingWarning(self.NUMBER_OF_PADS-len(self.pads), " unmapped pads !")
+        if len(self.shiftKnobs) < self.NUMBER_OF_SHIFTABLE_KNOBS:
+             MappingWarning(self.NUMBER_OF_PADS-len(self.shiftKnobs), " unmapped shiftKnobs !")
+        if len(self.pressKnobs) < self.NUMBER_OF_PRESSABLE_KNOBS:
+             MappingWarning(self.NUMBER_OF_PADS-len(self.pressKnobs), " unmapped pressKnobs !")
+            

@@ -6,13 +6,14 @@
 
 from utility.midiutils import changeStatusChannel, statusToChannel
 from backend.dictionaries import ControlModes, COLORS
-
+from utility.toolbox import function_dummy
+from utility.toolbox import Debug
 
 class Control:
     """
         A Control represents a physical button. It has a name, an FL callback function, a MIDI control mode and sends MIDI data.
     """
-    def __init__(self, name = 'UNIDENTIFIED_CONTROL', callback_fn = None, controlMode = ControlModes['CC'][1], data = 0):
+    def __init__(self, callback_fn = function_dummy, controlMode = ControlModes['OFF'], controlData1 = None, name = 'UNIDENTIFIED_CONTROL'):
         """A physical button
 
         Args:
@@ -24,7 +25,7 @@ class Control:
         self._setName(name)
         self._setFn(callback_fn)
         self.setControlMode(controlMode)
-        self._setControlData(data)
+        self._setControlData(controlData1)
         
     def _setName(self, name):
         self.name = name
@@ -32,24 +33,39 @@ class Control:
     def _setFn(self, callback_Fn):
         self.callback_fn = callback_Fn
         
-    def _setControlData(self, dataIn):
-        self.control_data = dataIn
+    def _setControlData(self, controlData1):
+        self.controlData1 = controlData1
         
     def setControlMode(self, controlMode):
         self.controlMode = controlMode
     
-    def changeChannel(self, channel):
+    def setChannel(self, channel):
         self.controlMode = changeStatusChannel(self.controlMode, channel)
     
     def getChannel(self):
         return statusToChannel(self.controlMode)
     
-class multipleControl(Control):
+class MultipleControl(Control):
     """
         One Control in a series of similar ones. It is a control with a number that can be set via self.setNumber(int)
         
     """
-    def __init__(self, name = 'UNIDENTIFIED_MULTIPLE_CONTROL', callback_fn = None, controlMode = ControlModes['CC'][1], dataIn = 0):
+    # If the control Mode is in CC range and controlData1 is AUTOCC_KEY, the mapping will auto-attribute a CC number.
+    AUTOCC_KEY = 0
+    
+    # First non-reserved CC channel
+    AUTOCC_FIRST = 2
+    
+    # number of controls set by auto CC
+    AUTOCCD = 0
+    
+    # Same "master" types in a row
+    INAROW = 0
+    
+    #
+    ISSAMETYPE = False
+    
+    def __init__(self, callback_fn = function_dummy, controlMode = ControlModes['CC'][1], controlData1 = AUTOCC_KEY, name = 'UNIDENTIFIED_MULTIPLE_CONTROL'):
         """One Control in a series of similar ones.
     
        Args:
@@ -58,32 +74,71 @@ class multipleControl(Control):
             controlMode (int, optional): First MIDI argument of sent message. Use utility.dictionnaries.ControlModes to map them easily. Defaults to ControlModes['CC'][1].
             data (int, optional): Second MIDI argument of sent message. Usually between 0 and 127. Defaults to 0.
         """
-        super().__init__(name, callback_fn, controlMode, dataIn)
-        self.setNumber(0)
+        super().__init__(callback_fn, controlMode, controlData1, name)
+        self._setNumber(1)
         
-    def setNumber(self, num):
+    def _setNumber(self, num):
         self.number = num
     
-    def setDefaultName(self):
+    def _autoSetNumber(self, number_mapping=[]):
+        if MultipleControl.ISSAMETYPE:
+            MultipleControl.INAROW +=1
+        else:
+            MultipleControl.INAROW = 1
+        if number_mapping:
+            self._setNumber(number_mapping[MultipleControl.INAROW-1])
+        else:
+            self._setNumber(MultipleControl.INAROW)
+    
+    def _setDefaultName(self):
         self._setName(self.name+str(self.number))
+    
+    def _initControl(self, channel, number_mapping=[]):
+        self._autoSetNumber(number_mapping)
+        self._setDefaultName()
+        self.setChannel(channel)
+        self._autoSetCCNumber()
+        Debug(["Control number: ", self.number])
+        
+        
+    
+    def _autoSetCCNumber(self):
+        if self.controlMode in ControlModes['CC'] and self.controlData1==self.AUTOCC_KEY:
+            MultipleControl.AUTOCCD+=1
+            self.controlData1 = self.AUTOCC_FIRST + MultipleControl.AUTOCCD
+            Debug("AUTO-CC mode")
+            Debug("CC number: ", self.controlData1)
+    
+        
+     
         
 class ColorMapList:
     def __init__(self):
+        # The active colorMap
+        self._activeColorMap = 0
+        # The list containing colorMaps
         self._colorMaps=[]
-        self._isActive=[]
+        
+        self._isChanged= bool
         self._conditions=[]
+    
+    def setActivity(self, activeControl):
+        self._activeColorMap = activeControl
+            
         
     def _addColorMap(self, LED_COLOR_DEFAULT=COLORS['RED'], LED_COLOR_BEAT=COLORS['OFF'], LED_COLOR_BAR=COLORS['OFF'], condition=True):
         self._colorMaps.append([LED_COLOR_DEFAULT, LED_COLOR_BEAT, LED_COLOR_BAR])
-        self._isActive.append(False)
         self._conditions.append(condition)
         self._updateActivity()
         
+    def getColorMapNumber(self): return len(self._colorMaps)
     def _updateActivity(self):
-        i=0
-        for cond in self._conditions:
+        i=1
+        # This way first buttons have priority, but we ignore the first (default)
+        for cond in reversed(self._conditions):
             if cond:
-                self._isActive[i] = True 
-            else:
-                self._isActive[i] = False
+                self.setActivity(i)
+                return
             i+=1
+        # Defaults to first ColorMap
+        self.setActivity(0)

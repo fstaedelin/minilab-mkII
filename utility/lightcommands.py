@@ -10,5 +10,3 @@ def send_to_device(data) :
         #   open,blank, Arturia ID, standard msg                close
     device.midiOutSysex(bytes([0xF0, 0x00, 0x20, 0x6B, 0x7F, 0x42]) + data + bytes([0xF7]))
 
-def SetPadColor(pad, color) :
-    send_to_device(SET_COLOR_COMMAND + bytes([pad, color]))
