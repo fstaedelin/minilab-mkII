@@ -33,10 +33,13 @@ from mappings.example_mapping import exampleMapping
 #import ArturiaVCOL
 
 #-----------------------------------------------------------------------------------------
+# Set up the logger with the coolest name
 _JARVIS = Logger()
+_JARVIS.set_level("DEBUG")
+
+#-----------------------------------------------------------------------------------------
 _mk2 = ControllerConfig(exampleMapping)
 _processor = MidiProcessor(exampleMapping)
-
 
 #----------STOCK FL EVENT HANDLER FUNCTIONS ------------------------------------------------------------------------------
 # The event is received by OnMidiIn
