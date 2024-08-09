@@ -12,6 +12,7 @@ test_handled = logger.add_test(
     test_fn=lambda x: x,
     name = "Event handled"
 )
+
 logger.trigger(test_handled, event1.handled)
 
 logger.Navigate("parent")
