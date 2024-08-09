@@ -1,34 +1,53 @@
 class Logger:
     def __init__(self, level="WARNING"):
         self.level = level  # Set the default logging level
-        self.levels = {"SUCCESS": 10, "DEBUG": 10, "WARNING": 20, "ERROR": 30}  # Define logging levels with priorities
-        self.current_context = ["root"]  # Track the current context path as a list
-        self.contexts = {"root": {"children": {}}}  # Initialize the root context
+        self.levels = {"TRIGGABLE": 5, "SUCCESS": 0, "DEBUG": 10, "WARNING": 20, "ERROR": 30}  # Define logging levels with priorities
+        self.current_context = {"root":{}}  # Track the current context path as a list
+        self.contexts = {"root":{}}  # Initialize the root context
         self._set_new_context()  # Set up the initial context
         self.active_contexts = set()  # Track active contexts
         self.triggered = False  # Track if a warning has been triggered
-        self.trigger_level = level  # Set the trigger level
+        self.trigger_level = "TRIGGABLE"  # Set the trigger level
         self.err_lvl = self.levels["DEBUG"]
+    
+    def _autoname(self, name = "children"):
+        ### ERR CODE 0 IF REPERTORY IS MASTER ONE AND ALREADY EXISTS
+        ### 1 if tried to pass a reserved name
+        print("     IN _AUTONAME")
+        print("             ", self.current_context)
+        RESERVED = ["children"]
+        for lvl in self.levels:
+            RESERVED = RESERVED + [lvl]
+        #print("RESERVED NAMES :", RESERVED)
         
-    def _set_new_context(self):
-        # Get the current context dictionary
-        current_context = self.get_current_context()
+        if name in self.current_context:
+            print(name, "already in context, giving another name and putting aside")
+            name =  f"{name}_{len(self.current_context[name]) + 1}"
+            print("renamed ", name)
         
-        # Check if we are in the root context and initialize it if necessary
-        if "DEBUG" not in current_context:
-            for key in list(self.levels.keys()) + ["TESTS"]:
-                current_context[key] = []
-            current_context["children"] = {}
-            self.current_context.append("children")
-        else:
-            # Create a new nested context
-            new_context_name = f"context_{len(current_context['children']) + 1}"
-            new_context = {key: [] for key in list(self.levels.keys()) + ["TESTS"]}
-            new_context["children"] = {}
-            current_context["children"][new_context_name] = new_context
-            self.current_context.append(new_context_name)
+        return name
+            
+            
+        
+    def _set_new_context(self, name = "children" ,parent = "children"):
+        RESERVED = ["children"]
+        for lvl in self.levels:
+            RESERVED = RESERVED + [lvl]
+        # First time
+        if self.contexts == {"root":{}}:
+            for k in RESERVED:
+                self.contexts[k] = {}
+        current_context = self.contexts.copy()
+        new_context_name = self._autoname(name)
+        new_context = {key: {} for key in list(self.levels.keys())}
+        new_context[parent] = {}
+        current_context[parent][new_context_name] = new_context
+        self.contexts.update(current_context)
 
-    def set_levels(self, level, trigger_lvl="ERROR"):
+        
+            
+            
+    def set_levels(self, level, trigger_lvl="TRIGGABLE"):
         if level in self.levels:
             self.level = level  # Update the logging level if it's valid
         else:
@@ -41,18 +60,27 @@ class Logger:
     def get_current_context(self):
         # Navigate through the context tree to get the current context dictionary
         context = self.contexts["root"]
-        for part in self.current_context[1:]:
-            context = context["children"].get(part, context)
+        print(self.current_context)
+        for part in self.current_context:
+            print(part)
+            context = context.get(part, context)
+        print("get_current_context: ", context)
         return context
 
-    def set_context(self, direction):
+
+    def set_context(self, direction = 0, name="children"):
         if direction == +1:
             # Move to the parent context
             if len(self.current_context) > 1:
                 self.current_context.pop()
         elif direction == -1:
             # Create a new nested context and move into it
-            self._set_new_context()
+            if name not in self.current_context:
+                print(name, " setting new directory up")
+                self._set_new_context(name)
+            else: 
+                print(name, " already in children, moving there")
+                self.current_context = self.current_context[name]
         else:
             raise ValueError("Invalid context direction. Use +1 for parent and -1 for nested context.")
 
@@ -61,10 +89,21 @@ class Logger:
         context = self.get_current_context()
         formatted_message = self._format_message(level, message)
         if level in context and formatted_message not in context[level]:
-            context[level].append(formatted_message)
+            context[level] = formatted_message
             # Print the message immediately if the level is at or above the current level
+            #print("self.level = ", self.levels[self.level])
+            #print("level = ", self.levels[level])
+            #print("trigger_level = ", self.levels[self.trigger_level])
+            if self.levels[level] >= self.levels[self.trigger_level]:
+                print("Storing in Triggable")
+                #print(formatted_message)
+                context["TRIGGABLE"] = (formatted_message)
+            
             if self.levels[level] >= self.levels[self.level]:
+                print("printing ", level)
                 print(formatted_message)
+            
+        return formatted_message
 
     def debug(self, message):
         self.log(message, "DEBUG")  # Log a debug message
@@ -78,33 +117,54 @@ class Logger:
     def error(self, message):
         self.log(message, "ERROR")  # Log an error message
 
-    def add_test(self, val, test_fn, result_key, callback_true, callback_false, setup_message=""):
+    def add_test(self, val, test_fn, result_key, callback_true, callback_false, triggered=False):
         # Add a test to the current context
+        print("Add_test")
         context = self.get_current_context()
-        context["TESTS"].append({
+        print("Context :    ", context)
+        #print("add_test context: ", context)
+        
+        # set up the new test
+        newTest = {
             "val": val,
             "test_fn": test_fn,
             "result_key": result_key,
             "callback_true": callback_true,
             "callback_false": callback_false,
-            "triggered": False
-        })
+        }
+        
+        context["TESTS"][self._autoname("test")] = (newTest)
+        
         # Run the last added test immediately
-        self._force_run_test(context["TESTS"][-1])
+        # if it fails and is triggered, trigger it
+        print("Adding test")
+        print("Triggered", triggered)
+        if triggered:
+            print("TRIGGGGEREED")
+            newTest["triggered"] = True
+            
+            print(context["TESTS"])
+            test = self._run_trigd_test(context["TESTS"])
+        else:
+            test = self._force_run_test(context["TESTS"])
+        print("Test_result", test)
+        
+        
 
     def _force_run_test(self, test):
         # Run a test regardless of its triggered state
         result = test["test_fn"](test["val"])
         if result == test["result_key"]:
             test["callback_true"]()
+            return True
         else:
             test["callback_false"]()
-        test["triggered"] = True
+            return False
 
     
-    def _run_untrigd_test(self, test):
+    def _run_trigd_test(self, test):
         # Run a test only if it hasn't been triggered yet
-        if not test["triggered"]:
+        if "triggered" in test:
             result = test["test_fn"](test["val"])
             if result == test["result_key"]:
                 test["callback_true"]()
@@ -115,14 +175,53 @@ class Logger:
     def trigger(self, message, level):
         # Trigger a warning or error, activating all contexts and printing all messages
         #if not self.triggered:
-            self.log(message, level)
-            self.triggered = True
-            #self.draw_tree()
-            print(self.current_context.copy())
-            context_path = self.current_context.copy()
-            context = self.contexts["root"]["children"]
-            self.scan_next(context_path,context)
+            print("In trigger function !")
+            context = self.get_current_context()
+            print("get_current_context")
+            print(context)
+            #if context["TESTS"][-1].triggered == True:
+            
+            ## get the message
+            self.triggering_event_message = self.log(message, level)
+            
+            deep_context = context["TESTS"]
+            #path = list(self.find_parent_keys(deep_context, "triggered"))
+            #print("path is :")
+            #print(path)
+            
+            #self.triggered = True
+            ##self.draw_tree()
+            #print(self.current_context.copy())
+            #context_path = self.current_context.copy()
+            #context = self.contexts["root"]["children"]
+            #self.scan_next(context_path,context)
             print(self._format_message(level, "End of " + level.lower() + " message"))
+    
+    ## Given a dictionnary, recursively finds the path to specified key
+    def find_parent_keys(self, d, target_key, parent_key=None):
+        print("find_parent_keys")
+        for k, v in d.items():
+            print("         key :", k)
+            print("         value :", v)
+            if k == target_key:
+                print("key is target key")
+                print(parent_key)
+                # if it is a list, it must be a TEST list right ?
+                if isinstance(v, list):
+                    #for res in self.find_parent_keys(v, target_key, k)
+                    print("parent key is None: ", parent_key, ". You must be in a list ?")
+                    self.find_parent_keys(d, "TESTS", k)
+                else:
+                    yield parent_key
+            if isinstance(v, dict):
+                print("value is a dict")
+                for res in self.find_parent_keys(v, target_key, k):
+                    print(res)
+                    yield res
+    
+    def find_triggering_path(self):
+        context = self.get_current_context
+        return self.find_parent_keys(context, )
         
     def scan_next(self, context_path, context):  
         i=0
@@ -131,7 +230,7 @@ class Logger:
             print(i)
             next_destination = context_path[0]
             print("new iteration on context path:")
-            print(context_path[:])
+            #print(context_path[:])
             print(next_destination)
             #print(type(context))
             #print(context)
@@ -139,7 +238,7 @@ class Logger:
             if "TESTS" in context and context["TESTS"]:
                 print("Current test list is not empty !")
                 print("RUNNING TESTS")
-                print(context["TESTS"])
+                #print(context["TESTS"])
                 for test in context["TESTS"]:
                     print(test)
                     self._force_run_test(test)
@@ -189,7 +288,7 @@ class Logger:
             print(i)
             for next_destination in context_path:
                 print("new iteration on context path:")
-                print(context_path[:])
+                #print(context_path[:])
                 print(next_destination)
                 #print(type(context))
                 #print(context)
@@ -296,6 +395,11 @@ class Logger:
         return f"{lvl}{indent}{flag}|{message}"
 
 
+# Usage example:
+global logger
+logger = Logger()
+logger.set_levels("WARNING")
+
 
 # Define Event class for better structure
 class Event:
@@ -322,6 +426,7 @@ def SecondEventHandler(event):
         addEventCheck(event, "Event handled by SecondEventHandler", "Event not handled by SecondEventHandler")
 
 def addEventCheck(event, okmessage, warningMessage):
+    global logger
     #print("   Enter addEventCheck")
     logger.add_test(
         val=event,
@@ -333,18 +438,23 @@ def addEventCheck(event, okmessage, warningMessage):
     #print("   Exit addEventCheck")
     
 def addFinalCheck(event):
+    global logger
     logger.add_test(
         val=event,
         test_fn=lambda event: event.handled,
         result_key=True,
         callback_true=lambda: logger.log("Event was handled", "SUCCESS"),
-        callback_false=lambda: logger.trigger("NOT HANDLED :( ", "ERROR")
+        callback_false=testfunc(),
+        triggered = True
     )
-    
 
-# Usage example:
-logger = Logger()
-logger.set_levels("SUCCESS")
+def testfunc():
+    global logger
+    logger.trigger("NOT HANDLED :( ", "ERROR"),
+    context = logger.get_current_context()
+    print(context)
+
+
 
 
 # Setting initial context and logging messages
@@ -366,18 +476,12 @@ SecondEventHandler(event1)
 
 logger.set_context(-1)
 logger.add_test(
-        val=None,
-        test_fn=lambda w: True,
-        result_key=True,
-        callback_true=lambda: logger.debug("Some test"),
-        callback_false=lambda: logger.debug("not 69 :(")
-    )
-logger.add_test(
         val=event1,
         test_fn=lambda event: event.id,
         result_key=69,
         callback_true=lambda: logger.trigger("69 hehehe", "ERROR"),
-        callback_false=lambda: logger.debug("not 69 :(")
+        callback_false=lambda: logger.debug("not 69 :("),
+        triggered=True,
     )
 logger.set_context(+1)
 
