@@ -1,4 +1,4 @@
-from Logger import Logger
+from Logger_GPT_purged import Logger
 global logger
 logger = Logger("INFO")
 
