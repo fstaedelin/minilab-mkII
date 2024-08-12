@@ -73,7 +73,7 @@ class MiniLabMapping:
         # what to do ?
         print('TODO')
         event.handled = True
-        checkHandled(event)
+        #checkHandled(event)
         return event.handled
     
     ##### CHANNEL MANAGEMENT HELPERS #####
