@@ -1,0 +1,39 @@
+image: python:3.8
+
+variables:
+  # Set the Python environment variable
+  PYTHONPATH: "${CI_PROJECT_DIR}:${CI_PROJECT_DIR}/tests:${CI_PROJECT_DIR}/MIDI_CHECK"
+
+stages:
+#  - lint
+  - test
+
+before_script:
+  # Install dependencies
+  - pip install --upgrade pip
+  - pip install -r requirements.txt
+
+#lint:
+#  stage: lint
+#  script:
+#    - pip install flake8
+#    - flake8 --max-line-length=120 MIDI_CHECK tests
+#  # Optional: You can use a specific image or environment for linting
+
+test:
+  stage: test
+  script:
+    #- pip install pytest
+    - pytest --maxfail=1 --disable-warnings -q
+  # Optional: You can use a specific image or environment for testing
+
+# Optional: Additional stages for build, deploy, etc.
+# build:
+#   stage: build
+#   script:
+#     - echo "Build stage"
+
+# deploy:
+#   stage: deploy
+#   script:
+#     - echo "Deploy stage"

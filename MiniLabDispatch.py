@@ -1,12 +1,13 @@
-import device
-
-
-
-# This class is a dispatcher. It will send the MIDI event to the appropriate fonction
+# This class is a dispatcher. It will send the MIDI event to the appropriate function
 
 # MIDI event dispatcher transforms the MIDI event into a value through a transform function provided at construction
 # time. This value is then used as a key into a lookup table that provides a dispatcher and filter function. If the
 # filter function returns true, then the event is sent to the dispatcher function.
+
+from mappings.mappings_backend.dictionaries import ControlModes
+from mappings.mappings_backend.MiniLabMk2Mapping import MiniLabMapping
+
+from utility.toolbox import Debug
 
 class MidiEventDispatcher:
 
@@ -35,17 +36,33 @@ class MidiEventDispatcher:
 
 
     def NewHandlerForKeys(self, keys, callback_fn, filter_fn=None):
-        
         # Same function but for a group of controls
         
         for k in keys:
             self.NewHandler(k, callback_fn, filter_fn=filter_fn)
         return self
-
+    
+    def NewCCHandlersFromMapping(self, mapping: MiniLabMapping):
+        # Same function but linking pads
+        for controller in mapping.knobs + mapping.pads + [mapping.mod_wheel] :
+            if controller.controlMode in ControlModes['CC']:
+                Debug('Creating CC handle for '+str(controller.name), 
+                    text = ['Control Mode: ' + str(controller.controlMode),
+                            'Assigned to key' + str(controller.controlData1),                    
+                    ]
+                )
+                self.NewHandler(controller.controlData1, controller.callback_fn)
+        return self
+    
+    def NewSYSEXHandlersFromMapping(self, mapping:MiniLabMapping):
+        for controller in mapping.pads:
+            if controller.controlMode == ControlModes['SYSEX']:
+                self.NewHandler(controller.control_data, controller.callback_fn)
+        return self
+    
 
     def Dispatch(self, event):
         # This function will dispatch the event
-    
         key = self._transform_fn(event)
         processed = False
         if key in self._dispatch_map:
@@ -56,9 +73,3 @@ class MidiEventDispatcher:
             else:
                 processed = True
         return processed
-
-
-
-def send_to_device(data) :
-    #The only function that will send SysEx data to the controller
-    device.midiOutSysex(bytes([0xF0, 0x00, 0x20, 0x6B, 0x7F, 0x42]) + data + bytes([0xF7]))
