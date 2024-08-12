@@ -1,0 +1,3 @@
+[submodule "midi-check"]
+	path = midi-check
+	url = git@gitlab.com:opensource6744033/midi-check.git
