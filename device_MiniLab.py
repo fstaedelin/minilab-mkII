@@ -22,20 +22,20 @@ import patterns
 import device
 import gc
 
+from midi_check.MIDI_CHECK import MIDI_CHECK as MC
+
 from MiniLabProcess import MidiProcessor
 from MiniLabControllerConfig import ControllerConfig
 
 #import mapping
 from utility.toolbox import filterNotes, filterAftertouch
-from utility.logger import Logger
 from backend.dictionaries import ControlModes
 from mappings.example_mapping import exampleMapping
 #import ArturiaVCOL
 
 #-----------------------------------------------------------------------------------------
 # Set up the logger with the coolest name
-_JARVIS = Logger()
-_JARVIS.set_level("DEBUG")
+_JARVIS = MC("DEBUG")
 
 #-----------------------------------------------------------------------------------------
 _mk2 = ControllerConfig(exampleMapping)
@@ -51,55 +51,56 @@ _processor = MidiProcessor(exampleMapping)
 
 # Function called for each event
 def OnMidiIn(event) :
-    __MIDIIN = Debug("OnMidiIn")
+    _JARVIS.Navigate("OnMidiIn")
     # If you want to process SYSEX events before FL studio does, you need to do that here.
     if event.status == ControlModes['SYSEX']:
         _processor.ProcessSysExEvent(event)
-    __MIDIIN.close()
+    _JARVIS.Navigate("parent")
     
 
 def OnSysEx(event) :
-    __ONSYSEX = DeviceWarning('OnSysEx')
+    _JARVIS.Navigate("OnSysEx")
     #_processor.ProcessSysExEvent(event)
-    __ONSYSEX.close()
+    _JARVIS.Navigate("parent")
+
         
     
 # Function called for each event not dealt with by onMidiIn
 def OnMidiMsg(event) :
     # To test
-    __ONMIDIMSG = DeviceWarning(title = "OnMidiMsg")
+    _JARVIS.Navigate("OnMidiMsg")
     #device.processMIDICC(event)
     #device.directFeedback(event)    
     # Ignore Notes On, Off, (maybe Pitch bends ?) to not transmit them to OnMidiMsg
     if filterNotes(event):
-        Debug("Notes filtered")
+        _JARVIS.Debug("Notes filtered")
     elif filterAftertouch(event):
-        Debug("Pad aftertouch suppressed")
+        _JARVIS.Debug("Pad aftertouch suppressed")
     else:
         _processor.ProcessEvent(event)
-    __ONMIDIMSG.close()
+    _JARVIS.Navigate("parent")
         
     
 
 def OnPitchBend(event) :
-    Debug('Enter OnPitchBend')
-    
+    _JARVIS.Navigate("Enter OnPitchBend")
+    _JARVIS.Navigate("parent")
 
 def OnKeyPressure(event):
-    __ONKEYPRESSURE = DeviceWarning('Enter OnKeyPressure')
-    __ONKEYPRESSURE.close()
+    _JARVIS.Navigate("Enter OnKeyPressure")
+    _JARVIS.Navigate("parent")
 
 def OnChannelPressure(event):
-   __ONCHANNELPRESSURE = DeviceWarning('Enter OnChannelPressure')
-   __ONCHANNELPRESSURE.close()
+    _JARVIS.Navigate("Enter OnChannelPressure")
+    _JARVIS.Navigate("parent")
 
 def OnControlChange(event):
-    __ONCONTROLCHANGE = DeviceWarning('Enter OnControlChange')
-    __ONCONTROLCHANGE.close()
+    _JARVIS.Navigate("Enter OnControlChange")
+    _JARVIS.Navigate("parent")
     
 def OnProgramChange(event):
-    __ONPROGRAMCHANGE = DeviceWarning('Enter OnProgramChange')
-    __ONPROGRAMCHANGE.close()
+    _JARVIS.Navigate("Enter OnProgramChange")
+    _JARVIS.Navigate("parent")
 
 #----------STOCK FL EVENT RETURN FUNCTIONS ------------------------------------------------------------------------------
 # Function called when Play/Pause button is ON
@@ -114,13 +115,13 @@ def OnInit():
     _mk2.InitSync()
     
 def OnProjectLoad(status):
-    Debug('Enter OnProjectLoad')
+    _JARVIS.Debug('Enter OnProjectLoad')
 
 def OnRefresh(flags):
-    Debug('Enter OnRefresh')
+    _JARVIS.Debug('Enter OnRefresh')
     _mk2.Sync()
 
 # Handles the script when FL Studio closes
 def OnDeInit():
-    Debug('Enter OnDeInit')
+    _JARVIS.Debug('Enter OnDeInit')
     return
