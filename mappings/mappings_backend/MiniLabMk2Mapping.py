@@ -2,7 +2,7 @@
     This file contains MiniLabMk2Mapping class definition
 """
 
-from backend.maincontrollertypes import *
+from maincontrollertypes import *
 from utility.midiutils import MIDI_N_CHANNELS
 from utility.toolbox import MappingWarning
 

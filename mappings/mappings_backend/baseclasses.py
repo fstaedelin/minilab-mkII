@@ -5,9 +5,8 @@
 """
 
 from utility.midiutils import changeStatusChannel, statusToChannel
-from backend.dictionaries import ControlModes, COLORS
+from dictionaries import ControlModes, COLORS
 from utility.toolbox import function_dummy
-from utility.toolbox import Debug
 
 class Control:
     """
@@ -98,20 +97,12 @@ class MultipleControl(Control):
         self._setDefaultName()
         self.setChannel(channel)
         self._autoSetCCNumber()
-        Debug(["Control number: ", self.number])
-        
-        
     
     def _autoSetCCNumber(self):
         if self.controlMode in ControlModes['CC'] and self.controlData1==self.AUTOCC_KEY:
             MultipleControl.AUTOCCD+=1
             self.controlData1 = self.AUTOCC_FIRST + MultipleControl.AUTOCCD
-            Debug("AUTO-CC mode")
-            Debug("CC number: ", self.controlData1)
-    
-        
-     
-        
+
 class ColorMapList:
     def __init__(self):
         # The active colorMap

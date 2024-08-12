@@ -1,8 +1,8 @@
 import device
 import time
-from backend.maincontrollertypes import Pad
-from backend.dictionaries import COLORS
-from backend.baseclasses import ColorMapList
+from mappings.mappings_backend.maincontrollertypes import Pad
+from mappings.mappings_backend.dictionaries import COLORS
+from mappings.mappings_backend.baseclasses import ColorMapList
 # MIT License
 # Copyright (c) 2020 Ray Juang
 

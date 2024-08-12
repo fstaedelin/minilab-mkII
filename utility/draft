@@ -1,3 +1,0 @@
-Context in trigger()
-
-{'TRIGGABLE': [], 'SUCCESS': [], 'DEBUG': [], 'WARNING': [], 'ERROR': [], 'TESTS': [{'val': <__main__.Event object at 0x7f35b01f67f0>, 'test_fn': <function <lambda> at 0x7f35b0200550>, 'result_key': 69, 'callback_true': <function <lambda> at 0x7f35b02005e0>, 'callback_false': <function <lambda> at 0x7f35b0200670>, 'triggered': True}], 'children': {}}

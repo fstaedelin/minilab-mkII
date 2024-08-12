@@ -17,9 +17,9 @@ from MiniLabDispatch import MidiEventDispatcher
 from utility.flcommands import *
 from utility.toolbox import printCommandChannel, Tagable, Debug, ProcessorWarning
 
-from backend.dictionaries import SYSEX, ControlModes
+from mappings.mappings_backend.dictionaries import SYSEX, ControlModes
 
-from backend.MiniLabMk2Mapping import MiniLabMapping
+from mappings.mappings_backend.MiniLabMk2Mapping import MiniLabMapping
 
 #import ArturiaVCOL
 

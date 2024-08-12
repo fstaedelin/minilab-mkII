@@ -3,7 +3,7 @@ import ui
 import time
 import transport
 import mixer
-from backend.dictionaries import COLORS
+from mappings.mappings_backend.dictionaries import COLORS
 
 
 # This class handles visual feedback functions.

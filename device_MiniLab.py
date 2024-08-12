@@ -22,20 +22,18 @@ import patterns
 import device
 import gc
 
-from midi_check.MIDI_CHECK import MIDI_CHECK as MC
-
 from MiniLabProcess import MidiProcessor
 from MiniLabControllerConfig import ControllerConfig
 
 #import mapping
 from utility.toolbox import filterNotes, filterAftertouch
-from backend.dictionaries import ControlModes
+from mappings.mappings_backend.dictionaries import ControlModes
 from mappings.example_mapping import exampleMapping
+from utility.JARVIS import _JARVIS
+
 #import ArturiaVCOL
 
-#-----------------------------------------------------------------------------------------
-# Set up the logger with the coolest name
-_JARVIS = MC("DEBUG")
+
 
 #-----------------------------------------------------------------------------------------
 _mk2 = ControllerConfig(exampleMapping)
