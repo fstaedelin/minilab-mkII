@@ -1,7 +1,7 @@
 import time
 import transport
 
-from mappings.mappings_backend.MiniLabMk2Mapping import MiniLabMapping
+from utility.mappings.mappings_backend.MiniLabMk2Mapping import MiniLabMapping
 from MiniLabLeds import MiniLabLeds
 from MiniLabReturn import MiniLabLightReturn
 

@@ -1,4 +1,4 @@
-from mappings.mappings_backend.dictionaries import *
+from utility.mappings.mappings_backend.dictionaries import *
 def function_dummy():
     print('Dummy function')
 

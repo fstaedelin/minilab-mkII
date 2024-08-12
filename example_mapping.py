@@ -3,13 +3,13 @@
 """
 
 
-from mappings.mappings_backend.dictionaries import COLORS
-from mappings.mappings_backend.dictionaries import SYSEX
-from mappings.mappings_backend.dictionaries import ControlModes
+from utility.mappings.mappings_backend.dictionaries import COLORS
+from utility.mappings.mappings_backend.dictionaries import SYSEX
+from utility.mappings.mappings_backend.dictionaries import ControlModes
 from utility.flcommands import *
 
-from mappings.mappings_backend.maincontrollertypes import Pad, sysexPad, emptyPad, Knob, KnobPress, KnobShift
-from mappings.mappings_backend.MiniLabMk2Mapping import MiniLabMapping
+from utility.mappings.mappings_backend.maincontrollertypes import Pad, sysexPad, emptyPad, Knob, KnobPress, KnobShift
+from utility.mappings.mappings_backend.MiniLabMk2Mapping import MiniLabMapping
 
 # Define the channels set in MIDI Control Center. You should put all buttons of the same mode in the same channel, which shouldn't be the keyboard one
 CONTROL_CHANNEL = 2 # Shouldn't be 1

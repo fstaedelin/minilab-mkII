@@ -4,8 +4,8 @@
 # time. This value is then used as a key into a lookup table that provides a dispatcher and filter function. If the
 # filter function returns true, then the event is sent to the dispatcher function.
 
-from mappings.mappings_backend.dictionaries import ControlModes
-from mappings.mappings_backend.MiniLabMk2Mapping import MiniLabMapping
+from utility.mappings.mappings_backend.dictionaries import ControlModes
+from utility.mappings.mappings_backend.MiniLabMk2Mapping import MiniLabMapping
 
 from utility.toolbox import Debug
 

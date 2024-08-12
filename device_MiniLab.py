@@ -27,8 +27,8 @@ from MiniLabControllerConfig import ControllerConfig
 
 #import mapping
 from utility.toolbox import filterNotes, filterAftertouch
-from mappings.mappings_backend.dictionaries import ControlModes
-from mappings.example_mapping import exampleMapping
+from utility.mappings.mappings_backend.dictionaries import ControlModes
+from utility.mappings.example_mapping import exampleMapping
 from utility.JARVIS import _JARVIS
 
 #import ArturiaVCOL
