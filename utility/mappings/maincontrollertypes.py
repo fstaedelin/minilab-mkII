@@ -1,5 +1,5 @@
-from baseclasses import *
-from dictionaries  import COLORS, RESERVED_CC, SYSEX
+from utility.mappings.baseclasses import *
+from utility.mappings.dictionaries import COLORS, RESERVED_CC, SYSEX
 
 """
     This file contains specifications of base classes of controls useful for MiniLabmkII: Pad, Knob, ModWheel, PitchBend

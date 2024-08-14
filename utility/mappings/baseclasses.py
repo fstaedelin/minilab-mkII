@@ -5,7 +5,7 @@
 """
 
 from utility.midiutils import changeStatusChannel, statusToChannel
-from dictionaries import ControlModes, COLORS
+from utility.mappings.dictionaries import ControlModes, COLORS
 from utility.toolbox import function_dummy
 
 class Control:

@@ -4,10 +4,10 @@
 # time. This value is then used as a key into a lookup table that provides a dispatcher and filter function. If the
 # filter function returns true, then the event is sent to the dispatcher function.
 
-from utility.mappings.mappings_backend.dictionaries import ControlModes
-from utility.mappings.mappings_backend.MiniLabMk2Mapping import MiniLabMapping
+from utility.mappings.dictionaries import ControlModes
+from utility.mappings.MiniLabMk2Mapping import MiniLabMapping
 
-from utility.toolbox import Debug
+from utility.JARVIS import _JARVIS
 
 class MidiEventDispatcher:
 
@@ -46,10 +46,9 @@ class MidiEventDispatcher:
         # Same function but linking pads
         for controller in mapping.knobs + mapping.pads + [mapping.mod_wheel] :
             if controller.controlMode in ControlModes['CC']:
-                Debug('Creating CC handle for '+str(controller.name), 
-                    text = ['Control Mode: ' + str(controller.controlMode),
-                            'Assigned to key' + str(controller.controlData1),                    
-                    ]
+                _JARVIS.Debug(f"Creating CC handle for {str(controller.name)} \n\
+                    Control Mode: {str(controller.controlMode)} \n\
+                    Assigned to key: {str(controller.controlData1)}"
                 )
                 self.NewHandler(controller.controlData1, controller.callback_fn)
         return self

@@ -1,14 +1,12 @@
 import time
 import transport
 
-from utility.mappings.mappings_backend.MiniLabMk2Mapping import MiniLabMapping
+from utility.mappings.MiniLabMk2Mapping import MiniLabMapping
 from MiniLabLeds import MiniLabLeds
 from MiniLabReturn import MiniLabLightReturn
 
 # This is the master class. It will run the init lights pattern 
 # and call the others class to process MIDI events
-
-
 
 class ControllerConfig :
     

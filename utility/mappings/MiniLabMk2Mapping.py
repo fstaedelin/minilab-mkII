@@ -2,9 +2,8 @@
     This file contains MiniLabMk2Mapping class definition
 """
 
-from maincontrollertypes import *
+from utility.mappings.maincontrollertypes import *
 from utility.midiutils import MIDI_N_CHANNELS
-from utility.toolbox import MappingWarning
 
 class MiniLabMapping:
     
@@ -100,7 +99,7 @@ class MiniLabMapping:
         if control_chn not in range(1, MIDI_N_CHANNELS+1):
             raise ValueError("Channel number must be in [[ 1, 16 ]]")
         elif control_chn == self.KEYBOARD_CHANNEL:
-            MappingWarning("Control channel set to keyboard channel")
+            print("Control channel set to keyboard channel")
         
         if len(knobList) > MiniLabMapping.NUMBER_OF_KNOBS:
             ValueError("Too many Knobs for Arturia MiniLab mkII !")
@@ -109,11 +108,11 @@ class MiniLabMapping:
     def _checkIfComplete(self):
         # checks if there are unmapped pads
         if len(self.knobs) < self.NUMBER_OF_KNOBS:
-             MappingWarning(self.NUMBER_OF_PADS-len(self.knobs), " unmapped knobs !")
+             print(self.NUMBER_OF_PADS-len(self.knobs), " unmapped knobs !")
         if len(self.pads) < self.NUMBER_OF_PADS:
-             MappingWarning(self.NUMBER_OF_PADS-len(self.pads), " unmapped pads !")
+             print(self.NUMBER_OF_PADS-len(self.pads), " unmapped pads !")
         if len(self.shiftKnobs) < self.NUMBER_OF_SHIFTABLE_KNOBS:
-             MappingWarning(self.NUMBER_OF_PADS-len(self.shiftKnobs), " unmapped shiftKnobs !")
+             print(self.NUMBER_OF_PADS-len(self.shiftKnobs), " unmapped shiftKnobs !")
         if len(self.pressKnobs) < self.NUMBER_OF_PRESSABLE_KNOBS:
-             MappingWarning(self.NUMBER_OF_PADS-len(self.pressKnobs), " unmapped pressKnobs !")
+             print(self.NUMBER_OF_PADS-len(self.pressKnobs), " unmapped pressKnobs !")
             

@@ -1,28 +1,28 @@
-import channels
-import mixer
-import patterns
-import playlist
-import transport
-import ui
-import device
-#import plugins
-import midi
-#import MiniLabmk2Plugin
-#import FelixTemplate as template
-
-import general
+#import channels
+#import mixer
+#import patterns
+#import playlist
+#import transport
+#import ui
+#import device
+##import plugins
+#import midi
+##import MiniLabmk2Plugin
+##import FelixTemplate as template
+#
+#import general
 
 from MiniLabDispatch import MidiEventDispatcher
 
 from utility.flcommands import *
-from utility.toolbox import printCommandChannel, Tagable, Debug, ProcessorWarning
+from utility.toolbox import printCommandChannel
 
-from utility.mappings.mappings_backend.dictionaries import SYSEX, ControlModes
+from utility.mappings.dictionaries import SYSEX, ControlModes
 
-from utility.mappings.mappings_backend.MiniLabMk2Mapping import MiniLabMapping
+from utility.mappings.MiniLabMk2Mapping import MiniLabMapping
 
 #import ArturiaVCOL
-
+from utility.JARVIS import _JARVIS
 
 # This class processes all CC coming from the controller
 # The class creates new handler for each function
@@ -79,10 +79,10 @@ class MidiProcessor:
     def ProcessEvent(self, event) :
         processDebug = Debug(title = 'Processing')
         if event.status not in self.natively_handled:
-            Debug("Event not natively handled, Dispatching by status", callback_fn= Tagable.printEvent(event))
+            _JARVIS.Debug("Event not natively handled, Dispatching by status")
             return self._status_dispatcher.Dispatch(event)
         else:
-            Debug("Natively handled", callback_fn=Tagable.printEvent(event))
+            _JARVIS.Debug("Natively handled")
             return False
         processDebug._close()
         
@@ -90,7 +90,7 @@ class MidiProcessor:
     # Sysex processor
     def ProcessSysExEvent(self, event):
         if not event.sysex == None:
-            Debug('Processing SysExEvent',
+            _JARVIS.Debug('Processing SysExEvent',
                 ['event status: '+str(event.status),
                 'event sysex: '+str(event.sysex),
                 ])
@@ -98,9 +98,9 @@ class MidiProcessor:
         return event.handled
 
     def ProcessCommandEvent(self, event):
-        __PROCESSCOMMAND = Debug(title = "ProcessCommandEvent", key = self._CC_dispatcher.Dispatch(event))
+        __PROCESSCOMMAND = _JARVIS.Debug(title = "ProcessCommandEvent", key = self._CC_dispatcher.Dispatch(event))
         if event.handled == False:
-            ProcessorWarning('CC not set !')
+            _JARVIS.Warning('CC not set !')
             printCommandChannel(event)
         return event.handled
     

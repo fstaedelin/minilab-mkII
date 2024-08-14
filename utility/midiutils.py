@@ -2,7 +2,6 @@
 # This corresponds to event.status in midiEvents
 
 from midi import *
-from utility.toolbox import MIDIWarning
 
 MIDI_N_CHANNELS = 16
 
@@ -76,5 +75,5 @@ def isChannelLinked(status: int):
     elif (status < MIDI_NOTEOFF) or (status > MIDI_SYSTEMRESET):
         raise ValueError("utility.midiutils.isChannelLinked: This is not a MIDI status !")
     else:
-        MIDIWarning("utility.midiUtils.isChannelLinked: Midi Status does not correspond to a channel-linked control")
+        print("utility.midiUtils.isChannelLinked: Midi Status does not correspond to a channel-linked control")
         return False

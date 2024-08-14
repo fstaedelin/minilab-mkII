@@ -1,9 +1,9 @@
-# name=MiniLab - Fef - WIP
+# name=MiniLab - Fef - JARVIS
 """
 [[
     Surface:    MiniLab mkII
     Developer:    Fef
-    Version:    Alpha 1.1
+    Version:    Alpha 1.2
     Date:        30/07/2024
 
 ]]
@@ -27,7 +27,7 @@ from MiniLabControllerConfig import ControllerConfig
 
 #import mapping
 from utility.toolbox import filterNotes, filterAftertouch
-from utility.mappings.mappings_backend.dictionaries import ControlModes
+from utility.mappings.dictionaries import ControlModes
 from example_mapping import exampleMapping
 from utility.JARVIS import _JARVIS
 

@@ -1,4 +1,4 @@
-from midi_check.MIDI_CHECK import MIDI_CHECK as MC
+from utility.midi_check.MIDI_CHECK.mc import MIDI_CHECK as MC
 
 #-----------------------------------------------------------------------------------------
 # Set up the logger with the coolest name

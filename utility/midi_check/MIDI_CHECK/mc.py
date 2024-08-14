@@ -8,8 +8,7 @@
 #
 # @{
 ##
-
-from MIDI_CHECK.mc_utilities import MidiCheckUtilitiesMixin
+from utility.midi_check.MIDI_CHECK.mc_utilities import MidiCheckUtilitiesMixin
 
 
 ##
@@ -213,9 +212,9 @@ class MIDI_CHECK(MidiCheckUtilitiesMixin):
 
         # Set automatic callbacks if not provided
         if callback_false is None:
-            callback_false = self.Cb_False(f"Test {name} failed!")
+            callback_false = self.Cb_False("Test " + name + " failed!")
         if callback_true is None:
-            callback_true = self.Cb_True(f"Test {name} passed :D")
+            callback_true = self.Cb_True("Test " + name + " passed!")
 
         # Automatically name the test if not provided
         name = self._autonameTests(name)
