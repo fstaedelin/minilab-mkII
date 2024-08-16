@@ -1,4 +1,4 @@
-# name=MiniLab - Fef - JARVIS
+# name=MiniLab - Fef - JARVISV2
 """
 [[
     Surface:    MiniLab mkII
@@ -28,7 +28,7 @@ from MiniLabControllerConfig import ControllerConfig
 #import mapping
 from utility.toolbox import filterNotes, filterAftertouch
 from utility.mappings.dictionaries import ControlModes
-from example_mapping import exampleMapping
+from transport_mapping import transportMapping
 from utility.JARVIS import _JARVIS
 
 #import ArturiaVCOL
@@ -36,8 +36,9 @@ from utility.JARVIS import _JARVIS
 
 
 #-----------------------------------------------------------------------------------------
-_mk2 = ControllerConfig(exampleMapping)
-_processor = MidiProcessor(exampleMapping)
+_mk2 = ControllerConfig(transportMapping)
+_processor = MidiProcessor(transportMapping)
+
 
 #----------STOCK FL EVENT HANDLER FUNCTIONS ------------------------------------------------------------------------------
 # The event is received by OnMidiIn
@@ -46,10 +47,17 @@ _processor = MidiProcessor(exampleMapping)
 #       |-> Filters message if note or aftertouch (natively handled)
 #       |-> Else, process event with generic processor
 
+# _JARVIS.WriteLog()
 
 # Function called for each event
-def OnMidiIn(event) :
+def OnMidiIn(event):
     _JARVIS.Navigate("OnMidiIn")
+    if event.sysex != None:
+        _JARVIS.Warning('Processing sysex event:')
+        _JARVIS.Warning(f"event sysex: {event.sysex}")
+        _JARVIS.WriteLog()
+        _JARVIS.ClearLog()
+
     # If you want to process SYSEX events before FL studio does, you need to do that here.
     if event.status == ControlModes['SYSEX']:
         _processor.ProcessSysExEvent(event)
@@ -76,6 +84,7 @@ def OnMidiMsg(event) :
         _JARVIS.Debug("Pad aftertouch suppressed")
     else:
         _processor.ProcessEvent(event)
+    _JARVIS.WriteLog()
     _JARVIS.Navigate("parent")
         
     
@@ -109,8 +118,12 @@ def OnProgramChange(event):
 
 # Function called when FL Studio is starting
 def OnInit():
-    print('Loaded MIDI script for Arturia MiniLab mkII')
+    _JARVIS.Navigate("SCRIPT INIT")
+    _JARVIS.Debug('Loaded MIDI script for Arturia MiniLab mkII')
     _mk2.InitSync()
+    _JARVIS.Navigate("parent")
+    _JARVIS.WriteLog()
+    _JARVIS.ClearLog()
     
 def OnProjectLoad(status):
     _JARVIS.Debug('Enter OnProjectLoad')

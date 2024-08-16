@@ -17,54 +17,59 @@ exampleMapping = MiniLabMapping(
     # Knob mapping first
     [   
         # Knobs 1 to 8
-        Knob(normal_dummy),
-        Knob(normal_dummy),
-        Knob(normal_dummy),
-        Knob(normal_dummy),
-        Knob(normal_dummy),
-        Knob(normal_dummy),
-        Knob(normal_dummy),
-        Knob(normal_dummy),
+        Knob(dummy),
+        Knob(dummy),
+        Knob(dummy),
+        Knob(dummy),
+        Knob(dummy),
+        Knob(dummy),
+        Knob(dummy),
+        Knob(dummy),
         
         # Knobs 9 to 16
-        Knob(normal_dummy),
-        Knob(normal_dummy),
-        Knob(normal_dummy),
-        Knob(normal_dummy),
-        Knob(normal_dummy),
-        Knob(normal_dummy),
-        Knob(normal_dummy),
-        Knob(normal_dummy),
+        Knob(dummy),
+        Knob(dummy),
+        Knob(dummy),
+        Knob(dummy),
+        Knob(dummy),
+        Knob(dummy),
+        Knob(dummy),
+        Knob(dummy),
     ],
     
     # Shiftable knobs
     [        # Knobs 1 and 9 + SHIFT
-        KnobShift(normal_dummy),
-        KnobShift(normal_dummy),
+        KnobShift(dummy),
+        KnobShift(dummy),
     ],
     
     # Pressable knobs
     [    
         # Knobs 1 and 9 PRESS
-        KnobPress(normal_dummy),
-        KnobPress(normal_dummy),
+        KnobPress(JogUp),
+        KnobPress(JogDown),
     ],
     
     #Then Pads
     [
+        # play/pause
         Pad(start, COLORS['GREEN'], COLORS['YELLOW'])
             ._addColorMap(COLORS['GREEN'], COLORS['YELLOW'], COLORS['RED'], transport.isRecording()),
-        Pad(stop, COLORS['RED'], COLORS['RED']),
+        Pad(toggle_rec, COLORS['RED'], COLORS['RED'])
+            ._addColorMap(COLORS['RED'], COLORS['RED'], transport.isRecording()),
+        
+        
+        
         # Record drums
-        Pad(FPCRecord, LED_COLOR_DEFAULT=COLORS['RED']),
+        Pad(Overdub, LED_COLOR_DEFAULT=COLORS['YELLOW']),
         # Record bass
-        Pad(bassRecord, LED_COLOR_DEFAULT=COLORS['BLUE']),
+        Pad(toggle_metronome, LED_COLOR_DEFAULT=COLORS['YELLOW']),
         # Record Synth1
-        Pad(MidKeysRecord, LED_COLOR_DEFAULT=COLORS['YELLOW']),
+        Pad(PlayDrums, COLORS['RED'], COLORS['RED']),
         # Record Synth2
-        Pad(HiKeysRecord, LED_COLOR_DEFAULT=COLORS['YELLOW']),
+        Pad(PlayMidKeys, COLORS['YELLOW'], COLORS['YELLOW']),
         # Record Sax
-        Pad(saxRecord, LED_COLOR_DEFAULT=COLORS['CYAN']),
+        Pad(PlayHiKeys, COLORS['YELLOW'], COLORS['YELLOW']),
         # Record Vocals
         Pad(vocalRecord, LED_COLOR_DEFAULT=COLORS['BLUE']),
         

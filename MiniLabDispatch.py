@@ -42,15 +42,16 @@ class MidiEventDispatcher:
             self.NewHandler(k, callback_fn, filter_fn=filter_fn)
         return self
     
-    def NewCCHandlersFromMapping(self, mapping: MiniLabMapping):
+    def NewCCHandlersFromMapping(self, mapping: MiniLabMapping, filter_fn=None):
         # Same function but linking pads
-        for controller in mapping.knobs + mapping.pads + [mapping.mod_wheel] :
+        for controller in mapping._controls() :
             if controller.controlMode in ControlModes['CC']:
-                _JARVIS.Debug(f"Creating CC handle for {str(controller.name)} \n\
-                    Control Mode: {str(controller.controlMode)} \n\
-                    Assigned to key: {str(controller.controlData1)}"
-                )
-                self.NewHandler(controller.controlData1, controller.callback_fn)
+                _JARVIS.Debug(f"Creating CC handle for {str(controller.name)}")
+                _JARVIS.Navigate(controller.name)
+                _JARVIS.Debug(f"Control Mode: {str(controller.controlMode)}")
+                _JARVIS.Debug(f"Assigned to key: {str(controller.controlData1)}")
+                _JARVIS.Navigate("parent")
+                self.NewHandler(controller.controlData1, controller.callback_fn, filter_fn)
         return self
     
     def NewSYSEXHandlersFromMapping(self, mapping:MiniLabMapping):
@@ -69,6 +70,6 @@ class MidiEventDispatcher:
             if filter_fn(event):
                 callback_fn(event)
                 processed = True
-            else:
-                processed = True
+        else:
+            _JARVIS.Warning("Unassigned key")
         return processed

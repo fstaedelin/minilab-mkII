@@ -1,3 +1,0 @@
-[submodule "midi_check"]
-	path = utility/midi_check
-	url = git@github.com:fstaedelin/midi-check.git

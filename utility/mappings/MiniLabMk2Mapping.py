@@ -5,6 +5,7 @@
 from utility.mappings.maincontrollertypes import *
 from utility.midiutils import MIDI_N_CHANNELS
 
+from utility.JARVIS import _JARVIS
 class MiniLabMapping:
     
     NUMBER_OF_PADS = 16
@@ -46,7 +47,7 @@ class MiniLabMapping:
         self._checkIfComplete()
     
     def _controls(self):
-        return self.knobs + self.shiftKnobs + self.pressKnobs + self.pads + self.mod_wheel + self.pitch_bend
+        return self.knobs + self.shiftKnobs + self.pressKnobs + self.pads + [self.mod_wheel, self.pitch_bend]
     
     def _multiControls(self):
         return self.knobs + self.shiftKnobs + self.pressKnobs + self.pads
@@ -62,16 +63,17 @@ class MiniLabMapping:
     
     ##### Define mapping ModWheel similar for all mappings ? #####
     def ProcessModWheelEvent(self, event):
-        print('####### Processing ModWheelEvent #######')
+        _JARVIS.Navigate("PROCESS_MODWHEEL_EVENT")
+        _JARVIS.Warning("TODO: code mod wheel processing")
         # what to do ?
-        print('TODO')
+        _JARVIS.Navigate("parent")
         return event.handled
         
     def ProcessPitchBendEvent(self, event):
-        print('####### Processing PitchBendlEvent #######')
+        _JARVIS.Navigate("PROCESS_PITCHBEND_EVENT")
+        _JARVIS.Warning("TODO: code pitch bend processing")
         # what to do ?
-        print('TODO')
-        event.handled = True
+        _JARVIS.Navigate("parent")
         #checkHandled(event)
         return event.handled
     

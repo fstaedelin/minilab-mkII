@@ -19,8 +19,34 @@ ControlModes = {
     'AFTERTOUCH2' : range(MIDI_CHANAFTERTOUCH,MIDI_PITCHBEND),
     'PITCHBEND' : range(MIDI_PITCHBEND, MIDI_BEGINSYSEX),
     'SYSEX' : [MIDI_BEGINSYSEX, MIDI_ENDSYSEX],
-    'OTHER' : range(MIDI_BEGINSYSEX, MIDI_SYSTEMRESET)
+    'OTHER' : range(MIDI_ENDSYSEX, MIDI_SYSTEMRESET)
 }
+
+#def getControlMode(status: int) -> str:
+#    """
+#    Retrieve the control mode corresponding to a given status code.
+#
+#    This function searches through the predefined control modes and returns the key
+#    associated with the provided status. It is useful for mapping status codes to their
+#    respective control mode names.
+#
+#    Args:
+#        status (int): The status code for which to retrieve the control mode.
+#
+#    Returns:
+#        str: The control mode key that corresponds to the given status.
+#
+#    Raises:
+#        StopIteration: If the status does not match any control mode.
+#    """
+#    print(status)
+#    for key, value in ControlModes.items():
+#        print(value)
+#        if type(status) == int and status == value:
+#            print("here")
+#            return key
+#        elif type(status) != int and status in value:
+#            return key
 
 ## Reserved CCs:
 RESERVED_CC = {

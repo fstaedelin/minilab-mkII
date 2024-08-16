@@ -14,15 +14,17 @@
 
 from MiniLabDispatch import MidiEventDispatcher
 
-from utility.flcommands import *
-from utility.toolbox import printCommandChannel
+from utility.midiutils import *
+#from utility.toolbox import printCommandChannel
 
 from utility.mappings.dictionaries import SYSEX, ControlModes
+#, getControlMode
 
 from utility.mappings.MiniLabMk2Mapping import MiniLabMapping
 
 #import ArturiaVCOL
 from utility.JARVIS import _JARVIS
+#, printCommandChannel
 
 # This class processes all CC coming from the controller
 # The class creates new handler for each function
@@ -34,6 +36,7 @@ class MidiProcessor:
         return event.controlVal != 0
 
     def __init__(self, map: MiniLabMapping):
+        _JARVIS.Navigate("Processor Initialization")
         def by_data1(event) : return event.data1
         def by_data2(event) : return event.data2
         def by_status(event) : return event.status
@@ -56,7 +59,7 @@ class MidiProcessor:
         self._CC_dispatcher = (
             MidiEventDispatcher(by_data1)
             ## handles knobs, pads and the modulation wheel
-            .NewCCHandlersFromMapping(map)
+            .NewCCHandlersFromMapping(map, ignore_release)
         )
         
         ## Master dispatcher
@@ -72,36 +75,42 @@ class MidiProcessor:
             .NewHandler(map.pitch_bend.controlMode, map.ProcessPitchBendEvent)
             .NewHandlerForKeys(ControlModes['CC'], self.ProcessCommandEvent)
         )
+        
+        _JARVIS.Navigate("parent")
 
     
     # PROCESSORS
     # Master processor
     def ProcessEvent(self, event) :
-        processDebug = Debug(title = 'Processing')
+        _JARVIS.Navigate("PROCESS_EVENT")
         if event.status not in self.natively_handled:
             _JARVIS.Debug("Event not natively handled, Dispatching by status")
+            _JARVIS.Navigate("parent")
             return self._status_dispatcher.Dispatch(event)
         else:
             _JARVIS.Debug("Natively handled")
+            _JARVIS.Navigate("parent")
             return False
-        processDebug._close()
         
     
     # Sysex processor
     def ProcessSysExEvent(self, event):
-        if not event.sysex == None:
+        _JARVIS.Navigate("SYSEX_EVENT")
+        if not event.sysex is None:
             _JARVIS.Debug('Processing SysExEvent',
                 ['event status: '+str(event.status),
                 'event sysex: '+str(event.sysex),
                 ])
             event.handled = self._sysex_dispatcher.Dispatch(event)
+        _JARVIS.Navigate("parent")
         return event.handled
 
     def ProcessCommandEvent(self, event):
-        __PROCESSCOMMAND = _JARVIS.Debug(title = "ProcessCommandEvent", key = self._CC_dispatcher.Dispatch(event))
+        _JARVIS.Navigate("COMMAND_EVENT")
         if event.handled == False:
-            _JARVIS.Warning('CC not set !')
-            printCommandChannel(event)
+            self._CC_dispatcher.Dispatch(event)
+            _JARVIS.printCommandChannel(event)
+        _JARVIS.Navigate("parent")
         return event.handled
     
 

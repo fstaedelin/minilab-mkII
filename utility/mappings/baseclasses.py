@@ -100,8 +100,8 @@ class MultipleControl(Control):
     
     def _autoSetCCNumber(self):
         if self.controlMode in ControlModes['CC'] and self.controlData1==self.AUTOCC_KEY:
-            MultipleControl.AUTOCCD+=1
             self.controlData1 = self.AUTOCC_FIRST + MultipleControl.AUTOCCD
+            MultipleControl.AUTOCCD+=1
 
 class ColorMapList:
     def __init__(self):
