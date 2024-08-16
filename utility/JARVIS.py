@@ -7,7 +7,7 @@ from .midiutils import statusToChannel
 
 class JARVIS(MIDI_CHECK):
     def __init__(self):
-        super().__init__("WARNING")
+        super().__init__("DEBUG")
         
     def printCommandChannel(self, event):
         if event.midiId in ControlModes['CC']:

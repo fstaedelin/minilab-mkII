@@ -22,6 +22,7 @@ from utility.mappings.dictionaries import SYSEX, ControlModes
 
 from utility.mappings.MiniLabMk2Mapping import MiniLabMapping
 
+from utility.fl_commands.actions import Actions
 #import ArturiaVCOL
 from utility.JARVIS import _JARVIS
 #, printCommandChannel
@@ -60,6 +61,8 @@ class MidiProcessor:
             MidiEventDispatcher(by_data1)
             ## handles knobs, pads and the modulation wheel
             .NewCCHandlersFromMapping(map, ignore_release)
+            .NewHandlerForKeys(ControlModes['CC'], self.ProcessCommandEvent)
+            .NewHandlerForKeys(range(2, 17), self.OnPanKnobTurned)
         )
         
         ## Master dispatcher
@@ -115,3 +118,10 @@ class MidiProcessor:
     
 
     
+    def _get_knob_delta(self, event):
+        val = event.controlVal
+        return val if val < 64 else 64 - val
+    
+    def OnPanKnobTurned(self, event):
+        channelIndex = event.controlNum - 2
+        Actions.OnUpdatePanning(channelIndex, self._get_knob_delta(event))

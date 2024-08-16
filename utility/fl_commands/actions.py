@@ -77,15 +77,17 @@ class Actions:
         transport.record()
         
     # ---------------------- CHANNELS ACTIONS --------------------------
-    
-    def clip(self, low, high, x):
+    @staticmethod
+    def clip(low, high, x):
         return max(low, min(high, x))
 
-    def channel_volume_update(self, channel, delta):
+    @staticmethod
+    def channel_volume_update(channel, delta):
         volume = Actions.clip(0., 1., channels.getChannelVolume(channels.selectedChannel()) + (delta / 100.0))
         channels.setChannelVolume(channel, volume)
 
-    def OnUpdatePanning(self, channel, delta):
+    @staticmethod
+    def OnUpdatePanning(channel, delta):
         pan = Actions.clip(-1., 1., channels.getChannelPan(channel) + (delta / 100.0))
         channels.setChannelPan(channel, pan)
         
