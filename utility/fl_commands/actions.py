@@ -1,6 +1,7 @@
 """ Defines all constants and available actions that can be linked to a macro button. """
 import _random
 
+from utility.JARVIS import _JARVIS
 import arrangement
 import channels
 import general
@@ -45,6 +46,9 @@ _MENU_LEFT_COUNT = {
     'help': 1,
 }
 
+
+
+
 STEPS_PER_BAR = 16
 
 
@@ -76,20 +80,39 @@ class Actions:
     def toggle_rec(unused_param_value):
         transport.record()
         
+    @staticmethod
+    def clone_VST(unused_param_value):
+        _JARVIS.Warning("Not yet working, need pykeys for cloning channel")
+        #chan = channels.selectedChannel()
+        #Actions.clone_pattern(unused_param_value)
+        #Actions.clone_channel(unused_param_value)
+        #print(mixer.trackCount())
+        #channels.setTargetFxTrack(chan, 7)
+        
     # ---------------------- CHANNELS ACTIONS --------------------------
+         
+        
+    
     @staticmethod
     def clip(low, high, x):
         return max(low, min(high, x))
 
     @staticmethod
-    def channel_volume_update(channel, delta):
-        volume = Actions.clip(0., 1., channels.getChannelVolume(channels.selectedChannel()) + (delta / 100.0))
-        channels.setChannelVolume(channel, volume)
-
-    @staticmethod
     def OnUpdatePanning(channel, delta):
-        pan = Actions.clip(-1., 1., channels.getChannelPan(channel) + (delta / 100.0))
-        channels.setChannelPan(channel, pan)
+        if channel < channels.channelCount():
+            pan = Actions.clip(-1., 1., channels.getChannelPan(channel) + (delta / 100.0))
+            channels.setChannelPan(channel, pan)
+        else:
+            _JARVIS.Warning("No channel in this range")
+            
+        
+    @staticmethod
+    def OnUpdateVolume(channel, delta):
+        if channel < channels.channelCount():
+            volume = Actions.clip(0., 1., channels.getChannelVolume(channel) + (delta / 100.0))
+            channels.setChannelVolume(channel, volume)
+        else:
+            _JARVIS.Warning("No channel in this range")
         
     # ---------------------- AVAILABLE ACTIONS --------------------------
     @staticmethod
@@ -176,7 +199,8 @@ class Actions:
     @staticmethod
     def clone_pattern(unused_param_value):
         """Clone pattern"""
-        Actions.fl_windows_shortcut('c', ctrl=1, shift=1)
+        pattern =patterns.patternNumber()
+        patterns.clonePattern(pattern)
 
     @staticmethod
     def clone_channel(unused_param_value):
@@ -257,6 +281,7 @@ class Actions:
         select = (channels.channelNumber() - 1) % channels.channelCount()
         channels.deselectAll()
         channels.selectChannel(select, 1)
+        
 
     @staticmethod
     def channel_rack_down(unused_param_value):

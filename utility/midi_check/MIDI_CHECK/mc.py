@@ -104,6 +104,7 @@ class MIDI_CHECK(MidiCheckUtilitiesMixin):
         """
         for entry in self.msg_log:
             print(entry)
+        self.ClearLog()
 
     def ClearLog(self):
         self.msg_log = []

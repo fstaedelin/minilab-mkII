@@ -7,15 +7,15 @@ from .midiutils import statusToChannel
 
 class JARVIS(MIDI_CHECK):
     def __init__(self):
-        super().__init__("DEBUG")
+        super().__init__("ERROR")
         
     def printCommandChannel(self, event):
         if event.midiId in ControlModes['CC']:
-            self.Debug(f"Event status: {event.status}")
-            self.Debug(f"Control Changed on Channel {statusToChannel(event.status)}")
-            self.Debug(f"Control number: {event.data1}")
-            self.Debug(f"Value: {event.data2}")
-            self.Debug(f"Port: {event.port}")
+            self.Warning(f"Event status: {event.status}")
+            self.Warning(f"Control Changed on Channel {statusToChannel(event.status)}")
+            self.Warning(f"Control number: {event.data1}")
+            self.Warning(f"Value: {event.data2}")
+            self.Warning(f"Port: {event.port}")
         else:
             self.Debug("This is not a Control Change !")
             self.Debug(f"event status: {event.status}")
@@ -24,7 +24,7 @@ _JARVIS = JARVIS()
 _JARVIS.Navigate("TEST_PRESETS")
 
 
-
+#_JARVIS.WriteLog()
 
 
 

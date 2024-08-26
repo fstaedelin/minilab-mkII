@@ -131,6 +131,7 @@ def OnProjectLoad(status):
 def OnRefresh(flags):
     _JARVIS.Debug('Enter OnRefresh')
     _mk2.Sync()
+    _processor.updateMode()
 
 # Handles the script when FL Studio closes
 def OnDeInit():
